@@ -94,7 +94,7 @@ func Worker(worker <-chan WorkerCtx, b chan<- int) {
 		compressed, err := lz10.Compress(temp.Bytes())
 		checkError(err)
 
-		err = os.WriteFile(fmt.Sprintf("lists/dllist_%d_%d.bin", w.region.Region, w.language), compressed, 0666)
+		err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", w.region.Region, w.language), compressed, 0666)
 		checkError(err)
 		fmt.Printf("Finished worker - Region: %d, Language: %d\n", w.region.Region, w.language)
 		b <- 1
