@@ -104,8 +104,11 @@ var gameTDBRatingToRatingID = map[string]map[string]uint8{
 	},
 	"PEGI": {
 		"3":  8,
+		"4":  8,
+		"6":  9,
 		"7":  9,
 		"12": 10,
+		"15": 11,
 		"16": 11,
 		"18": 12,
 	},
