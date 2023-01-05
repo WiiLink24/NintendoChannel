@@ -98,6 +98,8 @@ var gameTDBRatingToRatingID = map[string]map[string]uint8{
 		"Z": 12,
 	},
 	"ESRB": {
+		// For some reason GameTDB has EC as 3 for some titles
+		"3":    8,
 		"EC":   8,
 		"E":    9,
 		"E10+": 10,
@@ -149,7 +151,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			}
 
 			// We will not include mods or Gamecube games
-			if game.Type == "CUSTOM" || game.Type == "GameCube" {
+			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" {
 				continue
 			}
 
@@ -236,7 +238,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 
 			l.TitleTable = append(l.TitleTable, table)
 
-			if _, err := os.Stat(fmt.Sprintf("./infos/%d/%d.info", l.region, binary.BigEndian.Uint32(titleID[:]))); err == nil {
+			if _, err := os.Stat(fmt.Sprintf("./infos/%d/%d/%d.info", l.region, l.language, binary.BigEndian.Uint32(titleID[:]))); err == nil {
 				// The info file exists, continue on to the next
 				continue
 			}
@@ -246,7 +248,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
 
-			i.MakeInfo(&game, fullTitle, synopsis, l.region, defaultTitleType)
+			i.MakeInfo(&game, fullTitle, synopsis, l.region, l.language, defaultTitleType)
 		}
 	}
 }
