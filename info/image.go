@@ -61,5 +61,5 @@ func (i *Info) WriteRatingImage(buffer *bytes.Buffer, region constants.Region) {
 	}
 
 	buffer.Write(constants.Images[regionToRatingGroup[region]][i.RatingID-8])
-	i.Header.RatingPictureSize = uint32(len(constants.E10Image))
+	i.Header.RatingPictureSize = uint32(len(constants.Images[regionToRatingGroup[region]][i.RatingID-8]))
 }
