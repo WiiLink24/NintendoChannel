@@ -13,7 +13,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"sync"
 )
 
 type List struct {
@@ -46,7 +45,6 @@ func checkError(err error) {
 }
 
 var pool *pgxpool.Pool
-var wg sync.WaitGroup
 var ctx = context.Background()
 
 func MakeDownloadList() {
@@ -61,58 +59,51 @@ func MakeDownloadList() {
 	defer pool.Close()
 	gametdb.PrepareGameTDB()
 
-	wg.Add(10)
 	for _, region := range constants.Regions {
-		region := region
 		for _, language := range region.Languages {
-			_language := language
-			go func(_language constants.Language, _region constants.RegionMeta) {
-				list := List{
-					region:      _region.Region,
-					ratingGroup: _region.RatingGroup,
-					language:    _language,
-					imageBuffer: new(bytes.Buffer),
-				}
+			list := List{
+				region:      region.Region,
+				ratingGroup: region.RatingGroup,
+				language:    language,
+				imageBuffer: new(bytes.Buffer),
+			}
 
-				list.MakeHeader()
-				list.MakeRatingsTable()
-				list.MakeTitleTypeTable()
-				list.MakeCompaniesTable()
-				list.MakeTitleTable()
-				list.MakeNewTitleTable()
-				list.MakeVideoTable()
-				list.MakeNewVideoTable()
-				list.MakeDemoTable()
-				list.MakeRecommendationTable()
-				list.MakeRecentRecommendationTable()
-				list.MakePopularVideoTable()
-				list.MakeDetailedRatingTable()
-				list.WriteRatingImages()
+			list.MakeHeader()
+			list.MakeRatingsTable()
+			list.MakeTitleTypeTable()
+			list.MakeCompaniesTable()
+			list.MakeTitleTable()
+			list.MakeNewTitleTable()
+			list.MakeVideoTable()
+			list.MakeNewVideoTable()
+			list.MakeDemoTable()
+			list.MakeRecommendationTable()
+			list.MakeRecentRecommendationTable()
+			list.MakePopularVideoTable()
+			list.MakeDetailedRatingTable()
+			list.WriteRatingImages()
 
-				temp := bytes.NewBuffer(nil)
-				list.WriteAll(temp)
-				list.Header.Filesize = uint32(temp.Len())
-				temp.Reset()
-				list.WriteAll(temp)
+			temp := bytes.NewBuffer(nil)
+			list.WriteAll(temp)
+			list.Header.Filesize = uint32(temp.Len())
+			temp.Reset()
+			list.WriteAll(temp)
 
-				crcTable := crc32.MakeTable(crc32.IEEE)
-				checksum := crc32.Checksum(temp.Bytes(), crcTable)
-				list.Header.CRC32 = checksum
+			crcTable := crc32.MakeTable(crc32.IEEE)
+			checksum := crc32.Checksum(temp.Bytes(), crcTable)
+			list.Header.CRC32 = checksum
 
-				temp.Reset()
-				list.WriteAll(temp)
+			temp.Reset()
+			list.WriteAll(temp)
 
-				// Compress then write
-				compressed, err := lz10.Compress(temp.Bytes())
-				checkError(err)
+			// Compress then write
+			compressed, err := lz10.Compress(temp.Bytes())
+			checkError(err)
 
-				err = os.WriteFile(fmt.Sprintf("lists/dllist_%d_%d.bin", region.Region, _language), compressed, 0666)
-				checkError(err)
-				wg.Done()
-			}(_language, region)
+			err = os.WriteFile(fmt.Sprintf("lists/dllist_%d_%d.bin", region.Region, language), compressed, 0666)
+			checkError(err)
 		}
 	}
-	wg.Wait()
 }
 
 // Write writes the current values in Votes to an io.Writer method.

@@ -6,7 +6,9 @@ import (
 	"NintendoChannel/info"
 	"encoding/binary"
 	"encoding/hex"
+	"fmt"
 	"github.com/mitchellh/go-wordwrap"
+	"os"
 	"strconv"
 	"strings"
 	"unicode/utf16"
@@ -234,10 +236,16 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 
 			l.TitleTable = append(l.TitleTable, table)
 
+			if _, err := os.Stat(fmt.Sprintf("./infos/%d/%d.info", l.region, binary.BigEndian.Uint32(titleID[:]))); err == nil {
+				// The info file exists, continue on to the next
+				continue
+			}
+
 			// Write all our static data first
 			i := info.Info{}
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
+
 			i.MakeInfo(&game, fullTitle, synopsis, l.region, defaultTitleType)
 		}
 	}
