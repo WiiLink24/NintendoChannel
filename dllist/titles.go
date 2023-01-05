@@ -6,7 +6,6 @@ import (
 	"NintendoChannel/info"
 	"encoding/binary"
 	"encoding/hex"
-	"fmt"
 	"github.com/mitchellh/go-wordwrap"
 	"strconv"
 	"strings"
