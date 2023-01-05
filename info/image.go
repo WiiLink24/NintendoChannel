@@ -3,6 +3,7 @@ package info
 import (
 	"NintendoChannel/constants"
 	"bytes"
+	_ "embed"
 	"fmt"
 	"golang.org/x/image/draw"
 	"image"
@@ -28,6 +29,21 @@ var consoleToImageType = map[constants.TitleType]string{
 	constants.NintendoThreeDS: "box",
 }
 
+var consoleToTempImageType = map[constants.TitleType][]byte{
+	constants.Wii:             Placeholder3DS,
+	constants.NintendoDS:      PlaceholderDS,
+	constants.NintendoThreeDS: Placeholder3DS,
+}
+
+//go:embed 3ds.jpg
+var Placeholder3DS []byte
+
+//go:embed ds.jpg
+var PlaceholderDS []byte
+
+//go:embed wii.jpg
+var PlaceholderWii []byte
+
 func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType, region constants.Region, gameID string) {
 	url := fmt.Sprintf("https://art.gametdb.com/%s/%s/%s/%s.png", titleTypeToStr[titleType], consoleToImageType[titleType], regionToStr[region], gameID)
 	resp, err := http.Get(url)
@@ -36,18 +52,18 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return
+		buffer.Write(consoleToTempImageType[titleType])
+	} else {
+		img, err := png.Decode(resp.Body)
+		checkError(err)
+
+		newImage := image.NewRGBA(image.Rect(0, 0, 384, 384))
+		draw.BiLinear.Scale(newImage, newImage.Bounds(), img, img.Bounds(), draw.Over, nil)
+
+		err = jpeg.Encode(buffer, newImage, nil)
+		checkError(err)
 	}
-
-	img, err := png.Decode(resp.Body)
-	checkError(err)
-
-	newImage := image.NewRGBA(image.Rect(0, 0, 384, 384))
-	draw.BiLinear.Scale(newImage, newImage.Bounds(), img, img.Bounds(), draw.Over, nil)
-
-	err = jpeg.Encode(buffer, newImage, nil)
-	checkError(err)
-
+	
 	i.Header.PictureSize = uint32(buffer.Len())
 }
 
