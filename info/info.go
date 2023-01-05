@@ -35,7 +35,7 @@ type Info struct {
 	CustomText           [10][41]uint16
 }
 
-func (i *Info) MakeInfo(game *gametdb.Game, title, synopsis string, region constants.Region, titleType constants.TitleType) {
+func (i *Info) MakeInfo(game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType) {
 	// Make other fields
 	i.GetSupportedControllers(&game.Controllers)
 	i.GetSupportedFeatures(&game.Features)
@@ -111,7 +111,7 @@ func (i *Info) MakeInfo(game *gametdb.Game, title, synopsis string, region const
 	temp.Reset()
 
 	i.WriteAll(temp, imageBuffer)
-	err := os.WriteFile(fmt.Sprintf("./infos/%d/%d.info", region, binary.BigEndian.Uint32(i.Header.GameID[:])), temp.Bytes(), 0666)
+	err := os.WriteFile(fmt.Sprintf("./infos/%d/%d/%d.info", region, language, binary.BigEndian.Uint32(i.Header.GameID[:])), temp.Bytes(), 0666)
 	checkError(err)
 }
 
