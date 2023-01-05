@@ -51,6 +51,7 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 		return
 	}
 
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		buffer.Write(consoleToTempImageType[titleType])
 	} else {
@@ -63,7 +64,7 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 		err = jpeg.Encode(buffer, newImage, nil)
 		checkError(err)
 	}
-	
+
 	i.Header.PictureSize = uint32(buffer.Len())
 }
 

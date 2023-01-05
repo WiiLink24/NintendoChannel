@@ -96,6 +96,7 @@ func PrepareGameTDB() {
 		response, err := client.Do(req)
 		checkError(err)
 
+		defer response.Body.Close()
 		contents, err := io.ReadAll(response.Body)
 		checkError(err)
 
