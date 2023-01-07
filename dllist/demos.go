@@ -1,6 +1,9 @@
 package dllist
 
 import (
+	"NintendoChannel/constants"
+	"bytes"
+	"github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
 	"unicode/utf16"
 )
 
@@ -23,22 +26,39 @@ type DemoTable struct {
 func (l *List) MakeDemoTable() {
 	l.Header.DemoTableOffset = l.GetCurrentSize()
 
-	var title [31]uint16
-	tempTitle := utf16.Encode([]rune("The Ghost"))
-	copy(title[:], tempTitle)
+	dl := NewNinchDllist()
+	err := dl.Read(kaitai.NewStream(bytes.NewReader(constants.DLList)), nil, dl)
+	checkError(err)
 
-	l.DemoTable = append(l.DemoTable, DemoTable{
-		ID:            1,
-		Title:         title,
-		Subtitle:      [31]uint16{},
-		TitleID:       0,
-		CompanyOffset: l.Header.CompanyTableOffset,
-		RemovalYear:   0xFFFF,
-		RemovalMonth:  0xFF,
-		RemovalDay:    0xFF,
-		RatingID:      9,
-		IsNew:         0,
-	})
+	demos, err := dl.DemosTable()
+	checkError(err)
 
-	l.Header.NumberOfDemoTables = 1
+	for i, demo := range demos {
+		if i == 6 {
+			break
+		}
+
+		var title [31]uint16
+		tempTitle := utf16.Encode([]rune(demo.Title))
+		copy(title[:], tempTitle)
+
+		var subtitle [31]uint16
+		tempSubtitle := utf16.Encode([]rune(demo.Subtitle))
+		copy(subtitle[:], tempSubtitle)
+
+		l.DemoTable = append(l.DemoTable, DemoTable{
+			ID:            1,
+			Title:         title,
+			Subtitle:      subtitle,
+			TitleID:       demo.Titleid,
+			CompanyOffset: l.Header.CompanyTableOffset,
+			RemovalYear:   0xFFFF,
+			RemovalMonth:  0xFF,
+			RemovalDay:    0xFF,
+			RatingID:      demo.RatingId,
+			IsNew:         0,
+		})
+	}
+
+	l.Header.NumberOfDemoTables = uint32(len(l.DemoTable))
 }
