@@ -73,6 +73,7 @@ func (l *List) MakeVideoTable() {
 	rows, err := pool.Query(ctx, l.getVideoQueryString())
 	checkError(err)
 
+	index := 1
 	defer rows.Close()
 	for rows.Next() {
 		var id int
@@ -97,10 +98,11 @@ func (l *List) MakeVideoTable() {
 			RatingID:    9,
 			Unknown3:    1,
 			IsNew:       1,
-			VideoIndex:  1,
-			Unknown4:    [2]byte{61, 222},
+			VideoIndex:  uint8(index),
+			Unknown4:    [2]byte{222, 222},
 			Title:       title,
 		})
+		index++
 	}
 
 	l.Header.NumberOfVideoTables = uint32(len(l.VideoTable))
@@ -176,4 +178,3 @@ func (l *List) MakePopularVideoTable() {
 
 	l.Header.NumberOfPopularVideoTables = uint32(len(l.PopularVideosTable))
 }
-
