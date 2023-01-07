@@ -22,10 +22,9 @@ type CompanyTable struct {
 }
 
 type TitleTable struct {
-	ID        uint32
-	TitleID   [4]byte
-	TitleType constants.TitleType
-	// TODO: Implement genres
+	ID            uint32
+	TitleID       [4]byte
+	TitleType     constants.TitleType
 	Genre         [3]byte
 	CompanyOffset uint32
 	ReleaseYear   uint16
@@ -146,6 +145,10 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 						fullTitle = locale.Title
 						synopsis = locale.Synopsis
 						titleType = constants.TitleTypeMap[game.Type]
+
+						if titleType == constants.NES && defaultTitleType == constants.NintendoThreeDS {
+							titleType = constants.ThreeDSDownload
+						}
 					}
 				}
 			}
@@ -248,7 +251,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
 
-			i.MakeInfo(&game, fullTitle, synopsis, l.region, l.language, defaultTitleType)
+			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType)
 		}
 	}
 }

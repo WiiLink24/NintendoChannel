@@ -1,6 +1,7 @@
 package dllist
 
 import (
+	"NintendoChannel/constants"
 	"unicode/utf16"
 )
 
@@ -44,19 +45,42 @@ type PopularVideosTable struct {
 	Title       [102]uint16
 }
 
+func (l *List) getVideoQueryString() string {
+	switch l.language {
+	case constants.Japanese:
+		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY id DESC`
+	case constants.English:
+		return `SELECT id, name_english, length, video_type FROM videos ORDER BY id DESC`
+	case constants.German:
+		return `SELECT id, name_german, length, video_type FROM videos ORDER BY id DESC`
+	case constants.French:
+		return `SELECT id, name_french, length, video_type FROM videos ORDER BY id DESC`
+	case constants.Spanish:
+		return `SELECT id, name_spanish, length, video_type FROM videos ORDER BY id DESC`
+	case constants.Italian:
+		return `SELECT id, name_italian, length, video_type FROM videos ORDER BY id DESC`
+	case constants.Dutch:
+		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY id DESC`
+	default:
+		// Will never reach here
+		return ""
+	}
+}
+
 func (l *List) MakeVideoTable() {
 	l.Header.VideoTableOffset = l.GetCurrentSize()
 
-	rows, err := pool.Query(ctx, `SELECT name_english, length, video_type FROM videos ORDER BY id ASC`)
+	rows, err := pool.Query(ctx, l.getVideoQueryString())
 	checkError(err)
 
 	defer rows.Close()
 	for rows.Next() {
+		var id int
 		var queriedTitle string
 		var length int
 		var videoType int
 
-		err = rows.Scan(&queriedTitle, &length, &videoType)
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
 		checkError(err)
 
 		var title [123]uint16
@@ -64,7 +88,7 @@ func (l *List) MakeVideoTable() {
 		copy(title[:], tempTitle)
 
 		l.VideoTable = append(l.VideoTable, VideoTable{
-			ID:          1,
+			ID:          uint32(id),
 			VideoLength: uint16(length),
 			TitleID:     0,
 			VideoType:   uint8(videoType),
@@ -85,40 +109,71 @@ func (l *List) MakeVideoTable() {
 func (l *List) MakeNewVideoTable() {
 	l.Header.NewVideoTableOffset = l.GetCurrentSize()
 
-	var title [102]uint16
-	tempTitle := utf16.Encode([]rune("WiiLink goes global!"))
-	copy(title[:], tempTitle)
+	rows, err := pool.Query(ctx, l.getVideoQueryString())
+	checkError(err)
 
-	l.NewVideoTable = append(l.NewVideoTable, NewVideoTable{
-		ID:          1,
-		VideoLength: 280,
-		TitleID:     0,
-		Unknown:     [15]byte{},
-		Unknown2:    0,
-		RatingID:    9,
-		Unknown3:    1,
-		Title:       title,
-	})
-	l.Header.NumberOfNewVideoTables = 1
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		var queriedTitle string
+		var length int
+		var videoType int
+
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
+		checkError(err)
+
+		var title [102]uint16
+		tempTitle := utf16.Encode([]rune(queriedTitle))
+		copy(title[:], tempTitle)
+
+		l.NewVideoTable = append(l.NewVideoTable, NewVideoTable{
+			ID:          uint32(id),
+			VideoLength: uint16(length),
+			TitleID:     0,
+			Unknown:     [15]byte{},
+			Unknown2:    0,
+			RatingID:    9,
+			Unknown3:    1,
+			Title:       title,
+		})
+	}
+
+	l.Header.NumberOfNewVideoTables = uint32(len(l.NewVideoTable))
 }
 
 func (l *List) MakePopularVideoTable() {
 	l.Header.PopularVideoTableOffset = l.GetCurrentSize()
 
-	var title [102]uint16
-	tempTitle := utf16.Encode([]rune("WiiLink goes global!"))
-	copy(title[:], tempTitle)
+	rows, err := pool.Query(ctx, l.getVideoQueryString())
+	checkError(err)
 
-	l.PopularVideosTable = append(l.PopularVideosTable, PopularVideosTable{
-		ID:          1,
-		VideoLength: 280,
-		TitleID:     0,
-		BarColor:    0,
-		RatingID:    9,
-		Unknown:     1,
-		VideoRank:   1,
-		Unknown2:    222,
-		Title:       title,
-	})
-	l.Header.NumberOfPopularVideoTables = 1
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		var queriedTitle string
+		var length int
+		var videoType int
+
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
+		checkError(err)
+
+		var title [102]uint16
+		tempTitle := utf16.Encode([]rune(queriedTitle))
+		copy(title[:], tempTitle)
+
+		l.PopularVideosTable = append(l.PopularVideosTable, PopularVideosTable{
+			ID:          uint32(id),
+			VideoLength: uint16(length),
+			TitleID:     0,
+			BarColor:    0,
+			RatingID:    9,
+			Unknown:     1,
+			VideoRank:   1,
+			Unknown2:    222,
+			Title:       title,
+		})
+	}
+
+	l.Header.NumberOfPopularVideoTables = uint32(len(l.PopularVideosTable))
 }
+
