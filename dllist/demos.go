@@ -47,7 +47,7 @@ func (l *List) MakeDemoTable() {
 		copy(subtitle[:], tempSubtitle)
 
 		l.DemoTable = append(l.DemoTable, DemoTable{
-			ID:            1,
+			ID: uint32(i),
 			Title:         title,
 			Subtitle:      subtitle,
 			TitleID:       demo.Titleid,
