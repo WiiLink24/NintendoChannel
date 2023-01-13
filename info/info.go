@@ -4,8 +4,10 @@ import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"bytes"
+	"context"
 	"encoding/binary"
 	"fmt"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/mitchellh/go-wordwrap"
 	"hash/crc32"
 	"log"
@@ -33,7 +35,12 @@ type Info struct {
 	DistributionDateText [41]uint16
 	WiiPointsText        [41]uint16
 	CustomText           [10][41]uint16
+	// Writing a blank one if it doesn't exist and not point to it
+	// is way more efficient than writing everything individually
+	TimePlayed TimePlayed
 }
+
+var timePlayed = map[string]TimePlayed{}
 
 func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType) {
 	// Make other fields
@@ -94,6 +101,11 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 
 	copy(i.DisclaimerText[:], utf16.Encode([]rune("Game information is provided by GameTDB.")))
 
+	if v, ok := timePlayed[game.ID[:4]]; ok {
+		i.Header.TimesPlayedTableOffset = 6744
+		i.TimePlayed = v
+	}
+
 	temp := new(bytes.Buffer)
 	imageBuffer := new(bytes.Buffer)
 	i.WriteAll(temp, imageBuffer)
@@ -132,4 +144,30 @@ func (i *Info) GetCurrentSize(_buffer *bytes.Buffer) uint32 {
 	buffer := bytes.NewBuffer(nil)
 	i.WriteAll(buffer, _buffer)
 	return uint32(buffer.Len())
+}
+
+func GetTimePlayed(ctx *context.Context, pool *pgxpool.Pool) {
+	rows, err := pool.Query(*ctx, `SELECT game_id, COUNT(game_id), SUM(times_played), SUM(time_played) FROM time_played GROUP BY game_id`)
+	checkError(err)
+
+	for rows.Next() {
+		var gameID string
+		var numberOfPlayers int
+		var totalTimesPlayed int
+		var totalTimePlayed int
+
+		err = rows.Scan(&gameID, &numberOfPlayers, &totalTimesPlayed, &totalTimePlayed)
+		checkError(err)
+
+		if gameID == "RMCE" {
+			fmt.Println(totalTimesPlayed, totalTimePlayed, numberOfPlayers)
+		}
+
+		timePlayed[gameID] = TimePlayed{
+			TotalTimePlayed:           uint32(totalTimePlayed / 60),
+			TimeSpentPlayingPerPerson: uint32(totalTimePlayed / numberOfPlayers),
+			TotalTimesPlayed:          uint32(totalTimesPlayed),
+			TimesPlayedPerPerson:      uint32((float64(totalTimesPlayed / numberOfPlayers)) / 0.01),
+		}
+	}
 }

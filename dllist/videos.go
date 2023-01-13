@@ -60,7 +60,7 @@ func (l *List) getVideoQueryString() string {
 	case constants.Italian:
 		return `SELECT id, name_italian, length, video_type FROM videos ORDER BY id DESC`
 	case constants.Dutch:
-		return `SELECT id, name_dutch, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY id DESC`
 	default:
 		// Will never reach here
 		return ""

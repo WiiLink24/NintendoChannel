@@ -52,7 +52,7 @@ type Header struct {
 func (l *List) MakeHeader() {
 	// First format the update name to UTF-16.
 	var update [31]uint16
-	tempUpdate := utf16.Encode([]rune("WiiLink Edition"))
+	tempUpdate := utf16.Encode([]rune("1/15 Update"))
 	copy(update[:], tempUpdate)
 
 	// Next write the DlUrlIDs

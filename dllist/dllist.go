@@ -3,6 +3,7 @@ package dllist
 import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
+	"NintendoChannel/info"
 	"bytes"
 	"context"
 	"encoding/binary"
@@ -35,7 +36,9 @@ type List struct {
 	region      constants.Region
 	ratingGroup constants.RatingGroup
 	language    constants.Language
-	imageBuffer *bytes.Buffer
+	// map[game_id]amount_voted
+	recommendations map[string]int
+	imageBuffer     *bytes.Buffer
 }
 
 func checkError(err error) {
@@ -56,11 +59,14 @@ func Worker(worker <-chan WorkerCtx, b chan<- int) {
 	for w := range worker {
 		fmt.Printf("Starting worker - Region: %d, Language: %d\n", w.region.Region, w.language)
 		list := List{
-			region:      w.region.Region,
-			ratingGroup: w.region.RatingGroup,
-			language:    w.language,
-			imageBuffer: new(bytes.Buffer),
+			region:          w.region.Region,
+			ratingGroup:     w.region.RatingGroup,
+			language:        w.language,
+			imageBuffer:     new(bytes.Buffer),
+			recommendations: map[string]int{},
 		}
+
+		list.QueryRecommendations()
 
 		list.MakeHeader()
 		list.MakeRatingsTable()
@@ -125,6 +131,7 @@ func MakeDownloadList() {
 	// Ensure this Postgresql connection is valid.
 	defer pool.Close()
 	gametdb.PrepareGameTDB()
+	info.GetTimePlayed(&ctx, pool)
 
 	contexts := make(chan WorkerCtx, 10)
 	results := make(chan int, 10)

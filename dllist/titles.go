@@ -41,7 +41,7 @@ type TitleTable struct {
 	Unknown6         uint8
 	Unknown7         uint32
 	Unknown8         uint32
-	MedalType        uint8
+	MedalType        constants.Medal
 	Unknown9         uint8
 	TitleName        [31]uint16
 	Subtitle         [31]uint16
@@ -212,6 +212,11 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			tempSubtitle := utf16.Encode([]rune(subtitle))
 			copy(byteSubtitle[:], tempSubtitle)
 
+			medal := constants.None
+			if num, ok := l.recommendations[game.ID[:4]]; ok {
+				medal = GetMedal(num)
+			}
+
 			companyOffset, companyID := l.GetCompany(&game)
 			table := TitleTable{
 				ID:               id,
@@ -232,7 +237,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				Unknown6:         168,
 				Unknown7:         50331648,
 				Unknown8:         0,
-				MedalType:        0,
+				MedalType:        medal,
 				Unknown9:         222,
 				TitleName:        byteTitle,
 				Subtitle:         byteSubtitle,
@@ -250,7 +255,6 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			i := info.Info{}
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
-
 			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType)
 		}
 	}
@@ -348,4 +352,18 @@ func (l *List) MakeNewTitleTable() {
 	l.Header.NewTitleTableOffset = l.GetCurrentSize()
 	l.NewTitleTable = append(l.NewTitleTable, l.Header.TitleTableOffset)
 	l.Header.NumberOfNewTitleTables = 1
+}
+
+func GetMedal(numberOfTimesVotes int) constants.Medal {
+	if numberOfTimesVotes >= 17 {
+		return constants.Platinum
+	} else if numberOfTimesVotes >= 12 {
+		return constants.Gold
+	} else if numberOfTimesVotes >= 7 {
+		return constants.Silver
+	} else if numberOfTimesVotes >= 5 {
+		return constants.Bronze
+	}
+
+	return constants.None
 }
