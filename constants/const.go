@@ -221,3 +221,13 @@ var TitleTypeMap = map[string]TitleType{
 	"VC-GBA":    ThreeDSDownload,
 	"VC-GG":     ThreeDSDownload,
 }
+
+type Medal uint8
+
+const (
+	None Medal = iota
+	Bronze
+	Silver
+	Gold
+	Platinum
+)
