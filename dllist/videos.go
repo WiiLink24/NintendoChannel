@@ -2,6 +2,7 @@ package dllist
 
 import (
 	"NintendoChannel/constants"
+	"time"
 	"unicode/utf16"
 )
 
@@ -48,19 +49,19 @@ type PopularVideosTable struct {
 func (l *List) getVideoQueryString() string {
 	switch l.language {
 	case constants.Japanese:
-		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_japanese, length, video_type, date_added FROM videos ORDER BY id DESC`
 	case constants.English:
-		return `SELECT id, name_english, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_english, length, video_type, date_added FROM videos ORDER BY id DESC`
 	case constants.German:
-		return `SELECT id, name_german, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_german, length, video_type, date_added FROM videos ORDER BY id DESC`
 	case constants.French:
-		return `SELECT id, name_french, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_french, length, video_type, date_added FROM videos ORDER BY id DESC`
 	case constants.Spanish:
-		return `SELECT id, name_spanish, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_spanish, length, video_type, date_added FROM videos ORDER BY id DESC`
 	case constants.Italian:
-		return `SELECT id, name_italian, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_italian, length, video_type, date_added FROM videos ORDER BY id DESC`
 	case constants.Dutch:
-		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_dutch, length, video_type, date_added FROM videos ORDER BY id DESC`
 	default:
 		// Will never reach here
 		return ""
@@ -80,13 +81,21 @@ func (l *List) MakeVideoTable() {
 		var queriedTitle string
 		var length int
 		var videoType int
+		var dateAdded time.Time
 
-		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType, &dateAdded)
 		checkError(err)
 
 		var title [123]uint16
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
+
+		// A new video is one that is less than 5 days old
+		fiveDaysAfterAdded := dateAdded.AddDate(0, 0, 5)
+		isNew := 0
+		if time.Now().Before(fiveDaysAfterAdded) {
+			isNew = 1
+		}
 
 		l.VideoTable = append(l.VideoTable, VideoTable{
 			ID:          uint32(id),
@@ -97,7 +106,7 @@ func (l *List) MakeVideoTable() {
 			Unknown2:    0,
 			RatingID:    9,
 			Unknown3:    1,
-			IsNew:       1,
+			IsNew:       uint8(isNew),
 			VideoIndex:  uint8(index),
 			Unknown4:    [2]byte{222, 222},
 			Title:       title,
@@ -121,7 +130,7 @@ func (l *List) MakeNewVideoTable() {
 		var length int
 		var videoType int
 
-		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
 		checkError(err)
 
 		var title [102]uint16
@@ -156,7 +165,7 @@ func (l *List) MakePopularVideoTable() {
 		var length int
 		var videoType int
 
-		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
 		checkError(err)
 
 		var title [102]uint16
