@@ -231,3 +231,25 @@ const (
 	Gold
 	Platinum
 )
+
+func GetVideoQueryString(language Language) string {
+	switch language {
+	case Japanese:
+		return `SELECT id, name_japanese, length, video_type, date_added FROM videos ORDER BY id DESC`
+	case English:
+		return `SELECT id, name_english, length, video_type, date_added FROM videos ORDER BY id DESC`
+	case German:
+		return `SELECT id, name_german, length, video_type, date_added FROM videos ORDER BY id DESC`
+	case French:
+		return `SELECT id, name_french, length, video_type, date_added FROM videos ORDER BY id DESC`
+	case Spanish:
+		return `SELECT id, name_spanish, length, video_type, date_added FROM videos ORDER BY id DESC`
+	case Italian:
+		return `SELECT id, name_italian, length, video_type, date_added FROM videos ORDER BY id DESC`
+	case Dutch:
+		return `SELECT id, name_dutch, length, video_type, date_added FROM videos ORDER BY id DESC`
+	default:
+		// Will never reach here
+		return ""
+	}
+}

@@ -46,32 +46,10 @@ type PopularVideosTable struct {
 	Title       [102]uint16
 }
 
-func (l *List) getVideoQueryString() string {
-	switch l.language {
-	case constants.Japanese:
-		return `SELECT id, name_japanese, length, video_type, date_added FROM videos ORDER BY id DESC`
-	case constants.English:
-		return `SELECT id, name_english, length, video_type, date_added FROM videos ORDER BY id DESC`
-	case constants.German:
-		return `SELECT id, name_german, length, video_type, date_added FROM videos ORDER BY id DESC`
-	case constants.French:
-		return `SELECT id, name_french, length, video_type, date_added FROM videos ORDER BY id DESC`
-	case constants.Spanish:
-		return `SELECT id, name_spanish, length, video_type, date_added FROM videos ORDER BY id DESC`
-	case constants.Italian:
-		return `SELECT id, name_italian, length, video_type, date_added FROM videos ORDER BY id DESC`
-	case constants.Dutch:
-		return `SELECT id, name_dutch, length, video_type, date_added FROM videos ORDER BY id DESC`
-	default:
-		// Will never reach here
-		return ""
-	}
-}
-
 func (l *List) MakeVideoTable() {
 	l.Header.VideoTableOffset = l.GetCurrentSize()
 
-	rows, err := pool.Query(ctx, l.getVideoQueryString())
+	rows, err := pool.Query(ctx, constants.GetVideoQueryString(l.language))
 	checkError(err)
 
 	index := 1
@@ -120,7 +98,7 @@ func (l *List) MakeVideoTable() {
 func (l *List) MakeNewVideoTable() {
 	l.Header.NewVideoTableOffset = l.GetCurrentSize()
 
-	rows, err := pool.Query(ctx, l.getVideoQueryString())
+	rows, err := pool.Query(ctx, constants.GetVideoQueryString(l.language))
 	checkError(err)
 
 	defer rows.Close()
@@ -155,7 +133,7 @@ func (l *List) MakeNewVideoTable() {
 func (l *List) MakePopularVideoTable() {
 	l.Header.PopularVideoTableOffset = l.GetCurrentSize()
 
-	rows, err := pool.Query(ctx, l.getVideoQueryString())
+	rows, err := pool.Query(ctx, constants.GetVideoQueryString(l.language))
 	checkError(err)
 
 	defer rows.Close()
