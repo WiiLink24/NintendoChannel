@@ -14,6 +14,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"runtime"
+	"sync"
 )
 
 type List struct {
@@ -50,76 +52,6 @@ func checkError(err error) {
 var pool *pgxpool.Pool
 var ctx = context.Background()
 
-type WorkerCtx struct {
-	region   constants.RegionMeta
-	language constants.Language
-}
-
-func Worker(worker <-chan WorkerCtx, b chan<- int) {
-	for w := range worker {
-		fmt.Printf("Starting worker - Region: %d, Language: %d\n", w.region.Region, w.language)
-		list := List{
-			region:          w.region.Region,
-			ratingGroup:     w.region.RatingGroup,
-			language:        w.language,
-			imageBuffer:     new(bytes.Buffer),
-			recommendations: map[string]int{},
-		}
-
-		list.QueryRecommendations()
-
-		list.MakeHeader()
-		list.MakeRatingsTable()
-		list.MakeTitleTypeTable()
-		list.MakeCompaniesTable()
-		list.MakeTitleTable()
-		list.MakeNewTitleTable()
-		list.MakeVideoTable()
-		list.MakeNewVideoTable()
-		list.MakeDemoTable()
-		list.MakeRecommendationTable()
-		list.MakeRecentRecommendationTable()
-		list.MakePopularVideoTable()
-		list.MakeDetailedRatingTable()
-		list.WriteRatingImages()
-
-		temp := bytes.NewBuffer(nil)
-		list.WriteAll(temp)
-		list.Header.Filesize = uint32(temp.Len())
-		temp.Reset()
-		list.WriteAll(temp)
-
-		crcTable := crc32.MakeTable(crc32.IEEE)
-		checksum := crc32.Checksum(temp.Bytes(), crcTable)
-		list.Header.CRC32 = checksum
-
-		temp.Reset()
-		list.WriteAll(temp)
-
-		// Compress then write
-		compressed, err := lz10.Compress(temp.Bytes())
-		checkError(err)
-
-		err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", w.region.Region, w.language), compressed, 0666)
-		checkError(err)
-		fmt.Printf("Finished worker - Region: %d, Language: %d\n", w.region.Region, w.language)
-		b <- 1
-	}
-}
-
-func SpawnWorker(number int, contexts chan WorkerCtx, results chan int) {
-	for i := 0; i < number; i++ {
-		go Worker(contexts, results)
-	}
-}
-
-func ResolveWorkers(number int, contexts chan WorkerCtx, results chan int) {
-	for i := 0; i < number; i++ {
-		<-results
-		SpawnWorker(1, contexts, results)
-	}
-}
-
 func MakeDownloadList() {
 	// Initialize database
 	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", "noahpistilli", "2006", "127.0.0.1", "nc")
@@ -133,18 +65,68 @@ func MakeDownloadList() {
 	gametdb.PrepareGameTDB()
 	info.GetTimePlayed(&ctx, pool)
 
-	contexts := make(chan WorkerCtx, 10)
-	results := make(chan int, 10)
+	wg := sync.WaitGroup{}
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	semaphore := make(chan struct{}, 3)
 
-	SpawnWorker(3, contexts, results)
-
+	wg.Add(10)
 	for _, region := range constants.Regions {
 		for _, language := range region.Languages {
-			contexts <- WorkerCtx{region: region, language: language}
+			go func(_region constants.RegionMeta, _language constants.Language) {
+				defer wg.Done()
+				semaphore <- struct{}{}
+				fmt.Printf("Starting worker - Region: %d, Language: %d\n", _region.Region, _language)
+				list := List{
+					region:          _region.Region,
+					ratingGroup:     _region.RatingGroup,
+					language:        _language,
+					imageBuffer:     new(bytes.Buffer),
+					recommendations: map[string]int{},
+				}
+
+				list.QueryRecommendations()
+
+				list.MakeHeader()
+				list.MakeRatingsTable()
+				list.MakeTitleTypeTable()
+				list.MakeCompaniesTable()
+				list.MakeTitleTable()
+				list.MakeNewTitleTable()
+				list.MakeVideoTable()
+				list.MakeNewVideoTable()
+				list.MakeDemoTable()
+				list.MakeRecommendationTable()
+				list.MakeRecentRecommendationTable()
+				list.MakePopularVideoTable()
+				list.MakeDetailedRatingTable()
+				list.WriteRatingImages()
+
+				temp := bytes.NewBuffer(nil)
+				list.WriteAll(temp)
+				list.Header.Filesize = uint32(temp.Len())
+				temp.Reset()
+				list.WriteAll(temp)
+
+				crcTable := crc32.MakeTable(crc32.IEEE)
+				checksum := crc32.Checksum(temp.Bytes(), crcTable)
+				list.Header.CRC32 = checksum
+
+				temp.Reset()
+				list.WriteAll(temp)
+
+				// Compress then write
+				compressed, err := lz10.Compress(temp.Bytes())
+				checkError(err)
+
+				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)
+				checkError(err)
+				fmt.Printf("Finished worker - Region: %d, Language: %d\n", _region.Region, _language)
+				<-semaphore
+			}(region, language)
 		}
 	}
 
-	ResolveWorkers(10, contexts, results)
+	wg.Wait()
 }
 
 // Write writes the current values in Votes to an io.Writer method.
