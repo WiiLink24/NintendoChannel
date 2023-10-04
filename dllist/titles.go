@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/mitchellh/go-wordwrap"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -22,30 +23,40 @@ type CompanyTable struct {
 }
 
 type TitleTable struct {
-	ID            uint32
-	TitleID       [4]byte
-	TitleType     constants.TitleType
-	Genre         [3]byte
-	CompanyOffset uint32
-	ReleaseYear   uint16
-	ReleaseMonth  uint8
-	ReleaseDay    uint8
-	RatingID      uint8
-	Unknown       [2]byte
-	// TODO: Giant bitfield, extremely low priority however implement later.
-	HardcoreBitField uint32
-	FriendsBitField  uint32
-	Unknown3BitField uint32
-	Unknown4         uint16
-	Unknown5         uint16
-	Unknown6         uint8
-	Unknown7         uint32
-	Unknown8         uint32
-	MedalType        constants.Medal
-	Unknown9         uint8
-	TitleName        [31]uint16
-	Subtitle         [31]uint16
-	ShortTitle       [31]uint16
+	ID                         uint32
+	TitleID                    [4]byte
+	TitleType                  constants.TitleType
+	Genre                      [3]byte
+	CompanyOffset              uint32
+	ReleaseYear                uint16
+	ReleaseMonth               uint8
+	ReleaseDay                 uint8
+	RatingID                   uint8
+	WithFriendsFemaleSecondRow uint8
+	WithFriendsFemaleFirstRow  uint8
+	WithFriendsMaleSecondRow   uint8
+	WithFriendsMaleFirstRow    uint8
+	WithFriendsAllSecondRow    uint8
+	WithFriendsAllFirstRow     uint8
+	HardcoreFemaleSecondRow    uint8
+	HardcoreFemaleFirstRow     uint8
+	HardcoreMaleSecondRow      uint8
+	HardcoreMaleFirstRow       uint8
+	HardcoreAllSecondRow       uint8
+	HardcoreAllFirstRow        uint8
+	GamersFemaleSecondRow      uint8
+	GamersFemaleFirstRow       uint8
+	GamersMaleSecondRow        uint8
+	GamersMaleFirstRow         uint8
+	GamersAllSecondRow         uint8
+	GamersAllFirstRow          uint8
+	Unknown7                   [5]byte
+	Unknown8                   uint32
+	MedalType                  constants.Medal
+	Unknown9                   uint8
+	TitleName                  [31]uint16
+	Subtitle                   [31]uint16
+	ShortTitle                 [31]uint16
 }
 
 func (l *List) MakeCompaniesTable() {
@@ -214,37 +225,54 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 
 			medal := constants.None
 			if num, ok := l.recommendations[game.ID[:4]]; ok {
-				medal = GetMedal(num)
+				medal = GetMedal(num.NumberOfRecommendations)
 			}
 
 			companyOffset, companyID := l.GetCompany(&game)
 			table := TitleTable{
-				ID:               id,
-				TitleID:          titleID,
-				TitleType:        titleType,
-				Genre:            l.SetGenre(&game),
-				CompanyOffset:    companyOffset,
-				ReleaseYear:      releaseYear,
-				ReleaseMonth:     releaseMonth,
-				ReleaseDay:       releaseDay,
-				RatingID:         GetRatingID(game.Rating),
-				Unknown:          [2]byte{0x8, 0x20},
-				HardcoreBitField: 536872960,
-				FriendsBitField:  2863311530,
-				Unknown3BitField: 2863311530,
-				Unknown4:         43690,
-				Unknown5:         170,
-				Unknown6:         168,
-				Unknown7:         50331648,
-				Unknown8:         0,
-				MedalType:        medal,
-				Unknown9:         222,
-				TitleName:        byteTitle,
-				Subtitle:         byteSubtitle,
-				ShortTitle:       [31]uint16{},
+				ID:                         id,
+				TitleID:                    titleID,
+				TitleType:                  titleType,
+				Genre:                      l.SetGenre(&game),
+				CompanyOffset:              companyOffset,
+				ReleaseYear:                releaseYear,
+				ReleaseMonth:               releaseMonth,
+				ReleaseDay:                 releaseDay,
+				RatingID:                   GetRatingID(game.Rating),
+				WithFriendsFemaleSecondRow: 0,
+				WithFriendsFemaleFirstRow:  0,
+				WithFriendsMaleSecondRow:   0,
+				WithFriendsMaleFirstRow:    0,
+				WithFriendsAllSecondRow:    0,
+				WithFriendsAllFirstRow:     0,
+				HardcoreFemaleSecondRow:    0,
+				HardcoreFemaleFirstRow:     0,
+				HardcoreMaleSecondRow:      0,
+				HardcoreMaleFirstRow:       0,
+				HardcoreAllSecondRow:       0,
+				HardcoreAllFirstRow:        0,
+				GamersFemaleSecondRow:      0,
+				GamersFemaleFirstRow:       0,
+				GamersMaleSecondRow:        0,
+				GamersMaleFirstRow:         0,
+				GamersAllSecondRow:         0,
+				GamersAllFirstRow:          0,
+				// TODO: Flags in the other section
+				Unknown7:   [5]byte{1, 0, 0},
+				Unknown8:   0,
+				MedalType:  medal,
+				Unknown9:   222,
+				TitleName:  byteTitle,
+				Subtitle:   byteSubtitle,
+				ShortTitle: [31]uint16{},
 			}
 
+			table.PopulateCriteria(l, game.ID[:4])
+
 			l.TitleTable = append(l.TitleTable, table)
+			if !generateTitles {
+				continue
+			}
 
 			if _, err := os.Stat(fmt.Sprintf("./infos/%d/%d/%d.info", l.region, l.language, binary.BigEndian.Uint32(titleID[:]))); err == nil {
 				// The info file exists, continue on to the next
@@ -366,4 +394,162 @@ func GetMedal(numberOfTimesVotes int) constants.Medal {
 	}
 
 	return constants.None
+}
+
+// PopulateCriteria fills the bitfield entries in TitleTable
+func (t *TitleTable) PopulateCriteria(l *List, gameId string) {
+	if _, ok := l.recommendations[gameId]; !ok {
+		return
+	}
+
+	// First we will go after the `All` category.
+	// First 4 entries in the tables are the upper half.
+	for i := 0; i < 4; i++ {
+		// If it is none, then the bit will be set to nothing.
+		if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+			t.GamersAllFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+			t.GamersAllFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+			t.GamersAllSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+			t.GamersAllSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 0; i < 4; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+			t.HardcoreAllFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+			t.HardcoreAllFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+			t.HardcoreAllSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+			t.HardcoreAllSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 0; i < 4; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+			t.WithFriendsAllFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+			t.WithFriendsAllFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+			t.WithFriendsAllSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+			t.WithFriendsAllSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	// Next is male.
+	for i := 0; i < 4; i++ {
+		// If it is none, then the bit will be set to nothing.
+		if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+			t.GamersMaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+			t.GamersMaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+			t.GamersMaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+			t.GamersMaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 0; i < 4; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+			t.HardcoreMaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+			t.HardcoreMaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+			t.HardcoreMaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+			t.HardcoreMaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 0; i < 4; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+			t.WithFriendsMaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+			t.WithFriendsMaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+			t.WithFriendsMaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+			t.WithFriendsMaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	// Finally is female
+	for i := 0; i < 4; i++ {
+		// If it is none, then the bit will be set to nothing.
+		if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+			t.GamersFemaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+			t.GamersFemaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+			t.GamersFemaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+			t.GamersFemaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 0; i < 4; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+			t.HardcoreFemaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+			t.HardcoreFemaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+			t.HardcoreFemaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+			t.HardcoreFemaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 0; i < 4; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+			t.WithFriendsFemaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+			t.WithFriendsFemaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
+
+	for i := 4; i < 8; i++ {
+		if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+			t.WithFriendsFemaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
+		} else if l.recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+			t.WithFriendsFemaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
+		}
+	}
 }

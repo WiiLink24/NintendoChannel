@@ -39,7 +39,7 @@ type List struct {
 	ratingGroup constants.RatingGroup
 	language    constants.Language
 	// map[game_id]amount_voted
-	recommendations map[string]int
+	recommendations map[string]TitleRecommendation
 	imageBuffer     *bytes.Buffer
 }
 
@@ -49,10 +49,14 @@ func checkError(err error) {
 	}
 }
 
-var pool *pgxpool.Pool
-var ctx = context.Background()
+var (
+	pool           *pgxpool.Pool
+	ctx            = context.Background()
+	generateTitles = true
+)
 
-func MakeDownloadList() {
+func MakeDownloadList(_generateTitles bool) {
+	generateTitles = _generateTitles
 	// Initialize database
 	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", "noahpistilli", "2006", "127.0.0.1", "nc")
 	dbConf, err := pgxpool.ParseConfig(dbString)
@@ -81,7 +85,7 @@ func MakeDownloadList() {
 					ratingGroup:     _region.RatingGroup,
 					language:        _language,
 					imageBuffer:     new(bytes.Buffer),
-					recommendations: map[string]int{},
+					recommendations: map[string]TitleRecommendation{},
 				}
 
 				list.QueryRecommendations()

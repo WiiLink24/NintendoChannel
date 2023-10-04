@@ -10,7 +10,7 @@ import (
 func main() {
 	fmt.Println("WiiLink Nintendo Channel File Generator")
 	fmt.Println()
-	fmt.Println("1. DLList and game info\n2. Thumbnails\n3. CSData")
+	fmt.Println("1. DLList and game info\n2. 1. DLList only\n3. Thumbnails\n4. CSData")
 	fmt.Println()
 	fmt.Printf("Choose: ")
 
@@ -19,12 +19,15 @@ func main() {
 
 	switch selection {
 	case 1:
-		dllist.MakeDownloadList()
+		dllist.MakeDownloadList(true)
 		break
 	case 2:
-		thumbnail.WriteThumbnail()
+		dllist.MakeDownloadList(false)
 		break
 	case 3:
+		thumbnail.WriteThumbnail()
+		break
+	case 4:
 		csdata.CreateCSData()
 		break
 	default:
