@@ -253,3 +253,33 @@ func GetVideoQueryString(language Language) string {
 		return ""
 	}
 }
+
+// CriteriaBool is a boolean like value for AgeRecommendationData criteria.
+// A criteria may either be true, false, or none depending on if the titles has any recommendations.
+type CriteriaBool int
+
+const (
+	False CriteriaBool = iota
+	True
+	Nil
+)
+
+type AgeRecommendationData struct {
+	LowerAge      int
+	UpperAge      int
+	IsGamers      CriteriaBool
+	IsHardcore    CriteriaBool
+	IsWithFriends CriteriaBool
+}
+
+// AgeRecommendationTable exists with the sole purpose of populating the age bounds.
+var AgeRecommendationTable = [8]AgeRecommendationData{
+	{0, 100, Nil, Nil, Nil},
+	{0, 12, Nil, Nil, Nil},
+	{13, 18, Nil, Nil, Nil},
+	{19, 24, Nil, Nil, Nil},
+	{25, 34, Nil, Nil, Nil},
+	{35, 44, Nil, Nil, Nil},
+	{45, 54, Nil, Nil, Nil},
+	{55, 100, Nil, Nil, Nil},
+}
