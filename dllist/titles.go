@@ -48,7 +48,8 @@ type TitleTable struct {
 	GamersMaleFirstRow         uint8
 	GamersAllSecondRow         uint8
 	GamersAllFirstRow          uint8
-	Unknown7                   [5]byte
+	OtherFlags                 uint8
+	Unknown7                   [4]byte
 	Unknown8                   uint32
 	MedalType                  constants.Medal
 	Unknown9                   uint8
@@ -255,23 +256,24 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				GamersMaleFirstRow:         0,
 				GamersAllSecondRow:         0,
 				GamersAllFirstRow:          0,
-				// TODO: Flags in the other section
-				Unknown7:   [5]byte{1, 0, 0},
-				Unknown8:   0,
-				MedalType:  medal,
-				Unknown9:   222,
-				TitleName:  byteTitle,
-				Subtitle:   byteSubtitle,
-				ShortTitle: [31]uint16{},
+				OtherFlags:                 0,
+				Unknown7:                   [4]byte{0, 0, 0},
+				Unknown8:                   0,
+				MedalType:                  medal,
+				Unknown9:                   222,
+				TitleName:                  byteTitle,
+				Subtitle:                   byteSubtitle,
+				ShortTitle:                 [31]uint16{},
 			}
 
 			table.PopulateCriteria(l, game.ID[:4])
+			table.DetermineOtherFlags(game)
 
 			l.TitleTable = append(l.TitleTable, table)
 			if !generateTitles {
 				continue
 			}
-			
+
 			// Write all our static data first
 			i := info.Info{}
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
@@ -545,4 +547,29 @@ func (t *TitleTable) PopulateCriteria(l *List, gameId string) {
 			t.WithFriendsFemaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
+}
+
+func (t *TitleTable) DetermineOtherFlags(game gametdb.Game) {
+	value := 0xFF
+	mask := 0
+
+	// One player or Multiplayer
+	if game.Controllers.Players > 1 {
+		mask |= 1
+	}
+
+	// Is the game online
+	isOnline := false
+	for _, s := range game.Features.Feature {
+		if strings.Contains(s, "online") {
+			isOnline = true
+		}
+	}
+
+	if isOnline {
+		mask |= 12
+	}
+
+	// TODO: We don't have titles with any videos at the moment
+	t.OtherFlags = uint8(value & mask)
 }
