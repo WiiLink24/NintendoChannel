@@ -10,6 +10,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"net/http"
+	"os"
 )
 
 var regionToStr = map[constants.Region]string{
@@ -30,7 +31,7 @@ var consoleToImageType = map[constants.TitleType]string{
 }
 
 var consoleToTempImageType = map[constants.TitleType][]byte{
-	constants.Wii:             Placeholder3DS,
+	constants.Wii:             PlaceholderWii,
 	constants.NintendoDS:      PlaceholderDS,
 	constants.NintendoThreeDS: Placeholder3DS,
 }
@@ -45,6 +46,16 @@ var PlaceholderDS []byte
 var PlaceholderWii []byte
 
 func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType, region constants.Region, gameID string) {
+	// Check if it exists on disk first.
+	if _, err := os.Stat(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[constants.NintendoDS], regionToStr[constants.Japan], gameID)); err == nil {
+		data, err := os.ReadFile(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[constants.NintendoDS], regionToStr[constants.Japan], gameID))
+		checkError(err)
+
+		buffer.Write(data)
+		i.Header.PictureSize = uint32(buffer.Len())
+		return
+	}
+
 	url := fmt.Sprintf("https://art.gametdb.com/%s/%s/%s/%s.png", titleTypeToStr[titleType], consoleToImageType[titleType], regionToStr[region], gameID)
 	resp, err := http.Get(url)
 	if err != nil {
