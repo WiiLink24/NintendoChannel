@@ -47,8 +47,8 @@ var PlaceholderWii []byte
 
 func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType, region constants.Region, gameID string) {
 	// Check if it exists on disk first.
-	if _, err := os.Stat(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[constants.NintendoDS], regionToStr[constants.Japan], gameID)); err == nil {
-		data, err := os.ReadFile(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[constants.NintendoDS], regionToStr[constants.Japan], gameID))
+	if _, err := os.Stat(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[titleType], regionToStr[region], gameID)); err == nil {
+		data, err := os.ReadFile(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[titleType], regionToStr[region], gameID))
 		checkError(err)
 
 		buffer.Write(data)
