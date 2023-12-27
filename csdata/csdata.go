@@ -3,11 +3,14 @@ package csdata
 import (
 	"bytes"
 	"encoding/binary"
-	"github.com/SketchMaster2001/libwc24crypt"
-	"github.com/wii-tools/lzx/lz10"
+	"fmt"
 	"hash/crc32"
 	"os"
 	"unicode/utf16"
+
+	"github.com/SketchMaster2001/libwc24crypt"
+	colorFmt "github.com/fatih/color"
+	"github.com/wii-tools/lzx/lz10"
 )
 
 type Header struct {
@@ -37,6 +40,21 @@ var (
 	iv  = []byte{70, 70, 20, 40, 143, 110, 36, 6, 184, 107, 135, 239, 96, 45, 80, 151}
 )
 
+// Make text bold
+func bold(text string) string {
+	return "\033[1m" + text + "\033[0m"
+}
+
+func checkError(err error) {
+	if err != nil {
+		// ERROR! bold and red
+		colorFmt.HiRed(bold("An error has occurred!"))
+		fmt.Println()
+		fmt.Printf(bold("Reason: "))
+		panic(err)
+	}
+}
+
 func CreateCSData() {
 	// First append the DLListID to a
 	var DLListID [256]byte
@@ -59,27 +77,30 @@ func CreateCSData() {
 	}
 
 	var pics [][]byte
+
+	// Read pic1, pic2, and pic3 from files
 	pic1, err := os.ReadFile("pic1.tpl")
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	pic2, err := os.ReadFile("pic2.tpl")
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	pic3, err := os.ReadFile("pic1.tpl")
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
+	// Append the relevant parts of each pic to the pics slice
 	pics = append(pics, pic1[64:], pic2[64:], pic3[64:])
 
-	text := []string{"WiiLink Nintendo Channel!", "Demae Channel released", "WiiLink goes global"}
+	// Text that appears on the banner on the Wii Menu, corresponding to each pic
+	bannerTickerText := []string{
+		"WiiLink Nintendo Channel!",        // Goes on pic1
+		"Everybody Votes Channel is back!", // Goes on pic2
+		"WiiLink available on Dolphin!",    // Goes on pic3
+	}
+
 	for i := 0; i < 3; i++ {
 		var textArray [51]uint16
-		tempText := utf16.Encode([]rune(text[i]))
+		tempText := utf16.Encode([]rune(bannerTickerText[i]))
 		copy(textArray[:], tempText)
 
 		var offset uint32
@@ -127,12 +148,8 @@ func CreateCSData() {
 
 	rsaKey, err := os.ReadFile("nc.pem")
 	encrypted, err := libwc24crypt.EncryptWC24(compress, key, iv, rsaKey)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	err = os.WriteFile("csdata.bin", encrypted, 0666)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 }

@@ -7,9 +7,11 @@ import (
 	_ "embed"
 	"encoding/binary"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"os"
+
+	colorFmt "github.com/fatih/color"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Thumbnail struct {
@@ -32,17 +34,36 @@ type ImageTable struct {
 
 const ThumbnailHeaderSize = 32
 
+// Make text bold
+func bold(text string) string {
+	return "\033[1m" + text + "\033[0m"
+}
+
 func checkError(err error) {
 	if err != nil {
-		log.Fatalf("Nintendo Channel file generator has encountered a fatal error! Reason: %v\n", err)
+		// ERROR! bold and red
+		colorFmt.HiRed(bold("An error has occurred!"))
+		fmt.Println()
+		log.Fatalf(bold("Nintendo Channel file generator has encountered a fatal error!\n\n" + bold("Reason: ") + err.Error() + "\n"))
 	}
 }
 
+// Database credentials (you'll need to change these for your own database)
+// Learn how to set up a PostgreSQL database here: https://www.postgresql.org/docs/13/tutorial-start.html
+const (
+	dbUser     = "user"
+	dbPassword = "password"
+	dbHost     = "127.0.0.1"
+	dbName     = "nintendochannel"
+)
+
 func WriteThumbnail() {
 	// Initialize database
-	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", "noahpistilli", "2006", "127.0.0.1", "nc")
+	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", dbUser, dbPassword, dbHost, dbName)
+
 	dbConf, err := pgxpool.ParseConfig(dbString)
 	checkError(err)
+
 	pool, err := pgxpool.ConnectConfig(context.Background(), dbConf)
 	checkError(err)
 
