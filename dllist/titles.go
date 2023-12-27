@@ -157,14 +157,14 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 						titleType = constants.TitleTypeMap[game.Type]
 
 						if titleType == constants.NES && defaultTitleType == constants.NintendoThreeDS {
-							titleType = constants.ThreeDSDownload
+							titleType = constants.NintendoThreeDS
 						}
 					}
 				}
 			}
 
 			// We will not include mods or Gamecube games
-			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" {
+			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" || titleType == constants.ThreeDSDownload {
 				continue
 			}
 
@@ -188,7 +188,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			var releaseMonth uint8 = 0xFF
 			if game.ReleaseDate.Month != "" {
 				temp, _ := strconv.ParseUint(game.ReleaseDate.Month, 10, 32)
-				releaseMonth = uint8(temp)
+				releaseMonth = uint8(temp) - 1
 			}
 
 			var releaseDay uint8 = 0xFF
@@ -274,7 +274,6 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				continue
 			}
 
-			// Write all our static data first
 			i := info.Info{}
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
@@ -378,13 +377,13 @@ func (l *List) MakeNewTitleTable() {
 }
 
 func GetMedal(numberOfTimesVotes int) constants.Medal {
-	if numberOfTimesVotes >= 17 {
+	if numberOfTimesVotes >= 50 {
 		return constants.Platinum
-	} else if numberOfTimesVotes >= 12 {
+	} else if numberOfTimesVotes >= 35 {
 		return constants.Gold
-	} else if numberOfTimesVotes >= 7 {
+	} else if numberOfTimesVotes >= 20 {
 		return constants.Silver
-	} else if numberOfTimesVotes >= 5 {
+	} else if numberOfTimesVotes >= 15 {
 		return constants.Bronze
 	}
 

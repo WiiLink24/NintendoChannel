@@ -78,6 +78,10 @@ func MakeDownloadList(_generateTitles bool) {
 		for _, language := range region.Languages {
 			go func(_region constants.RegionMeta, _language constants.Language) {
 				defer wg.Done()
+				if _region.Region != constants.NTSC || _language != constants.English {
+					return
+				}
+
 				semaphore <- struct{}{}
 				fmt.Printf("Starting worker - Region: %d, Language: %d\n", _region.Region, _language)
 				list := List{

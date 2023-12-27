@@ -123,7 +123,12 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	temp.Reset()
 
 	i.WriteAll(temp, imageBuffer)
-	err := os.WriteFile(fmt.Sprintf("./infos/%d/%d/%d.info", region, language, fileID), temp.Bytes(), 0666)
+
+	// Ensure write path exists
+	err := os.MkdirAll(fmt.Sprintf("./infos/%d/%d", region, language), 0777)
+	checkError(err)
+
+	err = os.WriteFile(fmt.Sprintf("./infos/%d/%d/%d.info", region, language, fileID), temp.Bytes(), 0666)
 	checkError(err)
 }
 

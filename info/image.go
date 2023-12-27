@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"golang.org/x/image/draw"
 	"image"
+	"image/color"
 	"image/jpeg"
 	"image/png"
 	"net/http"
@@ -69,8 +70,23 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 		img, err := png.Decode(resp.Body)
 		checkError(err)
 
+		// Some resizing on the image to make it not look as stretched
+		x, y := img.Bounds().Dx(), img.Bounds().Dy()
+
+		if titleType != constants.NintendoThreeDS && titleType != constants.NintendoDS {
+			img = resize(img, int(float64(x)*(384.0/float64(y))), 384)
+		} else {
+			img = resize(img, 384, int(float64(y)*(384.0/float64(x))))
+		}
+
+		offsetX := (384 - img.Bounds().Dx()) / 2
+		offsetY := (384 - img.Bounds().Dy()) / 2
+		offset := image.Pt(offsetX, offsetY)
+
+		// Creates a blank white image which will then be layered by the cover
 		newImage := image.NewRGBA(image.Rect(0, 0, 384, 384))
-		draw.BiLinear.Scale(newImage, newImage.Bounds(), img, img.Bounds(), draw.Over, nil)
+		draw.Draw(newImage, newImage.Bounds(), &image.Uniform{C: color.RGBA{R: 255, G: 255, B: 255, A: 255}}, image.Point{}, draw.Src)
+		draw.Draw(newImage, img.Bounds().Add(offset), img, image.Point{}, draw.Src)
 
 		err = jpeg.Encode(buffer, newImage, nil)
 		checkError(err)
@@ -90,4 +106,10 @@ func (i *Info) WriteRatingImage(buffer *bytes.Buffer, region constants.Region) {
 
 	buffer.Write(constants.Images[regionToRatingGroup[region]][i.RatingID-8])
 	i.Header.RatingPictureSize = uint32(len(constants.Images[regionToRatingGroup[region]][i.RatingID-8]))
+}
+
+func resize(origImage image.Image, x, y int) image.Image {
+	newImage := image.NewRGBA(image.Rect(0, 0, x, y))
+	draw.BiLinear.Scale(newImage, newImage.Bounds(), origImage, origImage.Bounds(), draw.Over, nil)
+	return newImage
 }
