@@ -111,6 +111,8 @@ github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+github.com/wii-tools/libtpl v0.0.0-20240108143603-e66a8e51037d h1:4ykcDip6jOp2Xg0wt62yI1P4j4MnxK9Z7dEBidl3CxI=
+github.com/wii-tools/libtpl v0.0.0-20240108143603-e66a8e51037d/go.mod h1:AN4xO4K4GknjAnokrv6RyyyZsMx+BZZBzUimwZ76XOc=
 github.com/wii-tools/lzx v0.0.0-20221114001118-aaec5e424e43 h1:woCmRIngzz1fcUDj+1at7h9EW1Os8SK0tbOh4WEoyPQ=
 github.com/wii-tools/lzx v0.0.0-20221114001118-aaec5e424e43/go.mod h1:ufCQJfNwbD5fkg6jHpw69vc5opbc42TePvnloMFYbmY=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
