@@ -33,8 +33,10 @@ type ImageTable struct {
 const ThumbnailHeaderSize = 32
 
 func WriteThumbnail() {
+	config := common.GetConfig()
+
 	// Initialize database
-	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", "noahpistilli", "2006", "127.0.0.1", "nc")
+	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", config.Username, config.Password, config.DatabaseAddress, config.DatabaseName)
 	dbConf, err := pgxpool.ParseConfig(dbString)
 	common.CheckError(err)
 	pool, err := pgxpool.ConnectConfig(context.Background(), dbConf)
