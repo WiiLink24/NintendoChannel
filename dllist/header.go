@@ -1,6 +1,8 @@
 package dllist
 
 import (
+	"fmt"
+	"time"
 	"unicode/utf16"
 )
 
@@ -50,9 +52,11 @@ type Header struct {
 }
 
 func (l *List) MakeHeader() {
+	month, day := time.Now().Month(), time.Now().Day()
+
 	// First format the update name to UTF-16.
 	var update [31]uint16
-	tempUpdate := utf16.Encode([]rune("1/15 Update"))
+	tempUpdate := utf16.Encode([]rune(fmt.Sprintf("%s %d Update", month, day)))
 	copy(update[:], tempUpdate)
 
 	// Next write the DlUrlIDs
