@@ -76,7 +76,7 @@ func WriteThumbnail() {
 	deadBeef := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 
 	for _, image := range images {
-		file, err := os.ReadFile(fmt.Sprintf("/path/to/videos/%d.img", image))
+		file, err := os.ReadFile(fmt.Sprintf("%s/videos/%d.img", config.AssetsPath, image))
 		common.CheckError(err)
 
 		table := ImageTable{
@@ -98,7 +98,7 @@ func WriteThumbnail() {
 
 	// Write twice because yes
 	for _, image := range images {
-		file, err := os.ReadFile(fmt.Sprintf("/path/to/videos/%d.img", image))
+		file, err := os.ReadFile(fmt.Sprintf("%s/videos/%d.img", config.AssetsPath, image))
 		common.CheckError(err)
 
 		table := ImageTable{
@@ -121,6 +121,6 @@ func WriteThumbnail() {
 	buffer.Write(imageBuffer.Bytes())
 	binary.BigEndian.PutUint32(buffer.Bytes()[4:8], uint32(buffer.Len()))
 
-	err = os.WriteFile("thumbnail.bin", buffer.Bytes(), 0666)
+	err = os.WriteFile(fmt.Sprintf("%s/thumbnail.bin", config.AssetsPath), buffer.Bytes(), 0666)
 	common.CheckError(err)
 }
