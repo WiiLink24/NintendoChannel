@@ -124,7 +124,7 @@ func MakeDownloadList(_generateTitles bool) {
 				compressed, err := lz10.Compress(temp.Bytes())
 				common.CheckError(err)
 
-				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)
+				err = os.WriteFile(fmt.Sprintf("%s/lists/%d/%d/dllist.bin", config.AssetsPath, _region.Region, _language), compressed, 0666)
 				common.CheckError(err)
 				fmt.Printf("Finished worker - Region: %d, Language: %d\n", _region.Region, _language)
 				<-semaphore
