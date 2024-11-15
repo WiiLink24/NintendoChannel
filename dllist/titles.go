@@ -143,6 +143,12 @@ func (l *List) MakeTitleTable() {
 
 func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType constants.TitleType) {
 	for _, game := range *games {
+		if game.Locale == nil {
+			// Game doesn't exist for this region?
+			// Whatever the reason is, we have no metadata to use.
+			continue
+		}
+
 		if game.Region == regionToGameTDB[l.region] || game.Region == "ALL" {
 			titleType := defaultTitleType
 			// (Sketch) The first locale will always be English from what I have observed

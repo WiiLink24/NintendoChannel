@@ -159,10 +159,6 @@ func GetTimePlayed(ctx *context.Context, pool *pgxpool.Pool) {
 		err = rows.Scan(&gameID, &numberOfPlayers, &totalTimesPlayed, &totalTimePlayed)
 		common.CheckError(err)
 
-		if gameID == "RMCE" {
-			fmt.Println(totalTimesPlayed, totalTimePlayed, numberOfPlayers)
-		}
-
 		timePlayed[gameID] = TimePlayed{
 			TotalTimePlayed:           uint32(totalTimePlayed / 60),
 			TimeSpentPlayingPerPerson: uint32(totalTimePlayed / numberOfPlayers),

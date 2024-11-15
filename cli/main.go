@@ -10,7 +10,7 @@ import (
 func main() {
 	fmt.Println("WiiLink Nintendo Channel File Generator")
 	fmt.Println()
-	fmt.Println("1. DLList and game info\n2. 1. DLList only\n3. Thumbnails\n4. CSData")
+	fmt.Println("1. DLList and game info\n2. DLList only\n3. Thumbnails\n4. CSData")
 	fmt.Println()
 	fmt.Printf("Choose: ")
 

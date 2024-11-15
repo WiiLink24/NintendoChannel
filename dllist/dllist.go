@@ -47,7 +47,7 @@ var (
 	config         common.Config
 	pool           *pgxpool.Pool
 	ctx            = context.Background()
-	generateTitles = true
+	generateTitles bool
 )
 
 func MakeDownloadList(_generateTitles bool) {
@@ -76,9 +76,6 @@ func MakeDownloadList(_generateTitles bool) {
 		for _, language := range region.Languages {
 			go func(_region constants.RegionMeta, _language constants.Language) {
 				defer wg.Done()
-				if _region.Region != constants.NTSC || _language != constants.English {
-					return
-				}
 
 				semaphore <- struct{}{}
 				fmt.Printf("Starting worker - Region: %d, Language: %d\n", _region.Region, _language)
@@ -122,6 +119,9 @@ func MakeDownloadList(_generateTitles bool) {
 
 				// Compress then write
 				compressed, err := lz10.Compress(temp.Bytes())
+				common.CheckError(err)
+
+				err = os.MkdirAll(fmt.Sprintf("%s/lists/%d/%d", config.AssetsPath, _region.Region, _language), 0777)
 				common.CheckError(err)
 
 				err = os.WriteFile(fmt.Sprintf("%s/lists/%d/%d/dllist.bin", config.AssetsPath, _region.Region, _language), compressed, 0666)
