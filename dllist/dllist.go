@@ -1,6 +1,7 @@
 package dllist
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"NintendoChannel/info"
@@ -12,7 +13,6 @@ import (
 	"github.com/wii-tools/lzx/lz10"
 	"hash/crc32"
 	"io"
-	"log"
 	"os"
 	"runtime"
 	"sync"
@@ -43,13 +43,8 @@ type List struct {
 	imageBuffer     *bytes.Buffer
 }
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatalf("Nintendo Channel file generator has encountered a fatal error! Reason: %v\n", err)
-	}
-}
-
 var (
+	config         common.Config
 	pool           *pgxpool.Pool
 	ctx            = context.Background()
 	generateTitles = true
@@ -57,12 +52,15 @@ var (
 
 func MakeDownloadList(_generateTitles bool) {
 	generateTitles = _generateTitles
+
+	config = common.GetConfig()
+
 	// Initialize database
-	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", "noahpistilli", "2006", "127.0.0.1", "nc")
+	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", config.Username, config.Password, config.DatabaseAddress, config.DatabaseName)
 	dbConf, err := pgxpool.ParseConfig(dbString)
-	checkError(err)
+	common.CheckError(err)
 	pool, err = pgxpool.ConnectConfig(ctx, dbConf)
-	checkError(err)
+	common.CheckError(err)
 
 	// Ensure this Postgresql connection is valid.
 	defer pool.Close()
@@ -124,10 +122,10 @@ func MakeDownloadList(_generateTitles bool) {
 
 				// Compress then write
 				compressed, err := lz10.Compress(temp.Bytes())
-				checkError(err)
+				common.CheckError(err)
 
 				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)
-				checkError(err)
+				common.CheckError(err)
 				fmt.Printf("Finished worker - Region: %d, Language: %d\n", _region.Region, _language)
 				<-semaphore
 			}(region, language)
@@ -142,7 +140,7 @@ func MakeDownloadList(_generateTitles bool) {
 // but can write them individually.
 func (l *List) Write(writer io.Writer, data any) {
 	err := binary.Write(writer, binary.BigEndian, data)
-	checkError(err)
+	common.CheckError(err)
 }
 
 func (l *List) WriteAll(writer io.Writer) {

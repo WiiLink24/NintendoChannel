@@ -1,6 +1,7 @@
 package dllist
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"time"
 	"unicode/utf16"
@@ -50,7 +51,7 @@ func (l *List) MakeVideoTable() {
 	l.Header.VideoTableOffset = l.GetCurrentSize()
 
 	rows, err := pool.Query(ctx, constants.GetVideoQueryString(l.language))
-	checkError(err)
+	common.CheckError(err)
 
 	index := 1
 	defer rows.Close()
@@ -62,7 +63,7 @@ func (l *List) MakeVideoTable() {
 		var dateAdded time.Time
 
 		err = rows.Scan(&id, &queriedTitle, &length, &videoType, &dateAdded)
-		checkError(err)
+		common.CheckError(err)
 
 		var title [123]uint16
 		tempTitle := utf16.Encode([]rune(queriedTitle))
@@ -99,7 +100,7 @@ func (l *List) MakeNewVideoTable() {
 	l.Header.NewVideoTableOffset = l.GetCurrentSize()
 
 	rows, err := pool.Query(ctx, constants.GetVideoQueryString(l.language))
-	checkError(err)
+	common.CheckError(err)
 
 	defer rows.Close()
 	for rows.Next() {
@@ -109,7 +110,7 @@ func (l *List) MakeNewVideoTable() {
 		var videoType int
 
 		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
-		checkError(err)
+		common.CheckError(err)
 
 		var title [102]uint16
 		tempTitle := utf16.Encode([]rune(queriedTitle))
@@ -134,7 +135,7 @@ func (l *List) MakePopularVideoTable() {
 	l.Header.PopularVideoTableOffset = l.GetCurrentSize()
 
 	rows, err := pool.Query(ctx, constants.GetVideoQueryString(l.language))
-	checkError(err)
+	common.CheckError(err)
 
 	defer rows.Close()
 	for rows.Next() {
@@ -144,7 +145,7 @@ func (l *List) MakePopularVideoTable() {
 		var videoType int
 
 		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
-		checkError(err)
+		common.CheckError(err)
 
 		var title [102]uint16
 		tempTitle := utf16.Encode([]rune(queriedTitle))

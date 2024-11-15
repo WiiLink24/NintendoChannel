@@ -1,6 +1,7 @@
 package info
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"bytes"
@@ -10,7 +11,6 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/mitchellh/go-wordwrap"
 	"hash/crc32"
-	"log"
 	"os"
 	"strings"
 	"unicode/utf16"
@@ -126,21 +126,15 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 
 	// Ensure write path exists
 	err := os.MkdirAll(fmt.Sprintf("./infos/%d/%d", region, language), 0777)
-	checkError(err)
+	common.CheckError(err)
 
 	err = os.WriteFile(fmt.Sprintf("./infos/%d/%d/%d.info", region, language, fileID), temp.Bytes(), 0666)
-	checkError(err)
-}
-
-func checkError(err error) {
-	if err != nil {
-		log.Fatalf("Nintendo Channel info file generator has encountered a fatal error! Reason: %v\n", err)
-	}
+	common.CheckError(err)
 }
 
 func (i *Info) WriteAll(buffer, imageBuffer *bytes.Buffer) {
 	err := binary.Write(buffer, binary.BigEndian, *i)
-	checkError(err)
+	common.CheckError(err)
 
 	buffer.Write(imageBuffer.Bytes())
 }
@@ -153,7 +147,7 @@ func (i *Info) GetCurrentSize(_buffer *bytes.Buffer) uint32 {
 
 func GetTimePlayed(ctx *context.Context, pool *pgxpool.Pool) {
 	rows, err := pool.Query(*ctx, `SELECT game_id, COUNT(game_id), SUM(times_played), SUM(time_played) FROM time_played GROUP BY game_id`)
-	checkError(err)
+	common.CheckError(err)
 
 	for rows.Next() {
 		var gameID string
@@ -162,7 +156,7 @@ func GetTimePlayed(ctx *context.Context, pool *pgxpool.Pool) {
 		var totalTimePlayed int
 
 		err = rows.Scan(&gameID, &numberOfPlayers, &totalTimesPlayed, &totalTimePlayed)
-		checkError(err)
+		common.CheckError(err)
 
 		if gameID == "RMCE" {
 			fmt.Println(totalTimesPlayed, totalTimePlayed, numberOfPlayers)

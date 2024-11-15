@@ -1,6 +1,7 @@
 package info
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"bytes"
 	_ "embed"
@@ -50,7 +51,7 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 	// Check if it exists on disk first.
 	if _, err := os.Stat(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[titleType], regionToStr[region], gameID)); err == nil {
 		data, err := os.ReadFile(fmt.Sprintf("../images/%s/%s/%s.jpg", titleTypeToStr[titleType], regionToStr[region], gameID))
-		checkError(err)
+		common.CheckError(err)
 
 		buffer.Write(data)
 		i.Header.PictureSize = uint32(buffer.Len())
@@ -68,7 +69,7 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 		buffer.Write(consoleToTempImageType[titleType])
 	} else {
 		img, err := png.Decode(resp.Body)
-		checkError(err)
+		common.CheckError(err)
 
 		// Some resizing on the image to make it not look as stretched
 		x, y := img.Bounds().Dx(), img.Bounds().Dy()
@@ -89,7 +90,7 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 		draw.Draw(newImage, img.Bounds().Add(offset), img, image.Point{}, draw.Src)
 
 		err = jpeg.Encode(buffer, newImage, nil)
-		checkError(err)
+		common.CheckError(err)
 	}
 
 	i.Header.PictureSize = uint32(buffer.Len())

@@ -1,11 +1,11 @@
 package gametdb
 
 import (
+	"NintendoChannel/common"
 	"archive/zip"
 	"encoding/xml"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 )
@@ -77,45 +77,39 @@ var (
 	tdbNames = []string{"wiitdb", "dstdb", "3dstdb"}
 )
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatalf("GameTDB XML downloader has encountered a fatal error! Reason: %v\n", err)
-	}
-}
-
 func PrepareGameTDB() {
 	fmt.Println("Downloading GameTDB XML's...")
 	client := &http.Client{}
 
 	for i, name := range tdbNames {
 		req, err := http.NewRequest("GET", fmt.Sprintf("https://www.gametdb.com/%s.zip", name), nil)
-		checkError(err)
+		common.CheckError(err)
 
 		req.Header.Set("User-Agent", "WiiLink Nintendo Channel File Generator/0.1")
 
 		response, err := client.Do(req)
-		checkError(err)
+		common.CheckError(err)
 
 		defer response.Body.Close()
 		contents, err := io.ReadAll(response.Body)
-		checkError(err)
+		common.CheckError(err)
 
 		err = os.WriteFile("tdb.zip", contents, 0666)
-		checkError(err)
+		common.CheckError(err)
 
 		// We need to unzip before we proceed to unmarshalling
 		r, err := zip.OpenReader("tdb.zip")
-		checkError(err)
+		common.CheckError(err)
 
 		fp, err := r.Open(fmt.Sprintf("%s.xml", name))
-		checkError(err)
+		common.CheckError(err)
 
 		contents, err = io.ReadAll(fp)
-		checkError(err)
+		common.CheckError(err)
 
 		var gameTDB GameTDB
 		err = xml.Unmarshal(contents, &gameTDB)
-		checkError(err)
+		common.CheckError(err)
 
 		switch i {
 		case 0:
@@ -127,6 +121,6 @@ func PrepareGameTDB() {
 		}
 
 		err = os.Remove("tdb.zip")
-		checkError(err)
+		common.CheckError(err)
 	}
 }

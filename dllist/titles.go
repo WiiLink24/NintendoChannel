@@ -1,6 +1,7 @@
 package dllist
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"NintendoChannel/info"
@@ -64,7 +65,7 @@ func (l *List) MakeCompaniesTable() {
 	// Only the Wii XML contains company data
 	for _, company := range gametdb.WiiTDB.Companies.Companies {
 		companyID, err := strconv.ParseUint(hex.EncodeToString([]byte(company.Code)), 16, 32)
-		checkError(err)
+		common.CheckError(err)
 
 		var finalDeveloperName [31]uint16
 		developerName := utf16.Encode([]rune(company.Name))
@@ -304,13 +305,13 @@ func (l *List) GetCompany(game *gametdb.Game) (uint32, uint32) {
 		if isDiscGame {
 			if companyID == company.Code {
 				intCompanyID, err := strconv.ParseUint(hex.EncodeToString([]byte(company.Code)), 16, 32)
-				checkError(err)
+				common.CheckError(err)
 				return l.Header.CompanyTableOffset + (128 * uint32(i)), uint32(intCompanyID)
 			}
 		} else {
 			if strings.Contains(game.Publisher, company.Name) {
 				intcompanyID, err := strconv.ParseUint(hex.EncodeToString([]byte(company.Code)), 16, 32)
-				checkError(err)
+				common.CheckError(err)
 
 				return l.Header.CompanyTableOffset + (128 * uint32(i)), uint32(intcompanyID)
 			}

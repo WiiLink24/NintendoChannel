@@ -1,6 +1,7 @@
 package dllist
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"bytes"
 	"github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
@@ -28,10 +29,10 @@ func (l *List) MakeDemoTable() {
 
 	dl := NewNinchDllist()
 	err := dl.Read(kaitai.NewStream(bytes.NewReader(constants.DLList)), nil, dl)
-	checkError(err)
+	common.CheckError(err)
 
 	demos, err := dl.DemosTable()
-	checkError(err)
+	common.CheckError(err)
 
 	for i, demo := range demos {
 		if i == 6 {

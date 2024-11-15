@@ -1,6 +1,7 @@
 package dllist
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"fmt"
 )
@@ -52,14 +53,14 @@ func BaseRecommendationColumnQuery(columnName string) string {
 
 func (l *List) QueryRecommendations() {
 	rows, err := pool.Query(ctx, QueryRecommendations)
-	checkError(err)
+	common.CheckError(err)
 
 	defer rows.Close()
 	for rows.Next() {
 		var gameID string
 		var count int
 		err = rows.Scan(&count, &gameID)
-		checkError(err)
+		common.CheckError(err)
 
 		// First see if this game could exist in all regions
 		isForRegion := false

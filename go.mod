@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	github.com/h2non/bimg v1.1.9
 	github.com/jackc/pgx/v4 v4.17.2
 	golang.org/x/image v0.2.0
 	golang.org/x/text v0.5.0

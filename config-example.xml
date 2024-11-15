@@ -1,0 +1,12 @@
+<Config>
+    <!-- Credentials -->
+    <username>username</username>
+    <password>password</password>
+
+    <!-- Database information -->
+    <databaseAddress>127.0.0.1</databaseAddress>
+    <databaseName>nc</databaseName>
+
+    <!-- Assets -->
+    <assetsPath>assets</assetsPath>
+</Config>

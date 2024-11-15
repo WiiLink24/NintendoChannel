@@ -1,6 +1,7 @@
 package dllist
 
 import (
+	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"bytes"
 	"github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
@@ -51,10 +52,10 @@ func (l *List) MakeDetailedRatingTable() {
 	// TODO: Move away from kaitai
 	dl := NewNinchDllist()
 	err := dl.Read(kaitai.NewStream(bytes.NewReader(constants.DLList)), nil, dl)
-	checkError(err)
+	common.CheckError(err)
 
 	detailedRatings, err := dl.DetailedRatingsTable()
-	checkError(err)
+	common.CheckError(err)
 
 	for _, table := range detailedRatings {
 		var title [102]uint16
@@ -74,7 +75,7 @@ func (l *List) MakeDetailedRatingTable() {
 func (l *List) WriteRatingImages() {
 	deadBeef := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 
-	for i, _ := range l.RatingsTable {
+	for i := range l.RatingsTable {
 		l.RatingsTable[i].JPEGOffset = l.GetCurrentSize()
 		l.RatingsTable[i].JPEGSize = uint32(len(constants.Images[l.ratingGroup][i]))
 		l.imageBuffer.Write(constants.Images[l.ratingGroup][i])
