@@ -82,6 +82,7 @@ func PrepareGameTDB() {
 	client := &http.Client{}
 
 	for i, name := range tdbNames {
+		fmt.Println("Downloading " + name + "...")
 		req, err := http.NewRequest("GET", fmt.Sprintf("https://www.gametdb.com/%s.zip", name), nil)
 		common.CheckError(err)
 
@@ -122,5 +123,9 @@ func PrepareGameTDB() {
 
 		err = os.Remove("tdb.zip")
 		common.CheckError(err)
+
+		fmt.Println("Finished current XML.")
 	}
+
+	fmt.Println("Finished all XMLs.")
 }
