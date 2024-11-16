@@ -42,7 +42,6 @@ type Header struct {
 	Unknown1           [12]byte
 	DLUrlID            [256]byte
 	Unknown2           uint16
-	Banners            [3]Banner
 }
 
 type Banner struct {
@@ -105,13 +104,12 @@ func CreateCSData() {
 		dbBanners = append(dbBanners, dbBanner)
 	}
 
-	// There should be 3 banners.
-	// TODO: Figure out if more or less can be added.
-	if len(dbBanners) != 3 {
-		log.Fatalf("Expected 3 rows in banners! Got %d\n", len(dbBanners))
+	if len(dbBanners) > 3 {
+		log.Fatalln("Cannot have more than 3 images at a time.")
 	}
 
 	var pics [][]byte
+	picsSize := 0
 	for _, banner := range dbBanners {
 		data, err := os.Open(fmt.Sprintf("%s/banners/%d.img", config.AssetsPath, banner.ID))
 		common.CheckError(err)
@@ -125,6 +123,7 @@ func CreateCSData() {
 
 		// Append to slice while stripping the TPL header.
 		pics = append(pics, enc[64:])
+		picsSize += len(enc[64:])
 	}
 
 	// First append the DLListID to a
@@ -151,60 +150,44 @@ func CreateCSData() {
 				CountryCode:        49,
 				LanguageCode:       uint32(language),
 				SupportedLanguages: languagesRaw,
-				Unknown1:           [12]byte{0, 78, 112, 38, 194, 0, 0, 0, 3, 0, 0, 1},
+				Unknown1:           [12]byte{0, 78, 112, 38, 194, 0, 0, 0, byte(len(pics)), 0, 0, 1},
 				DLUrlID:            DLListID,
 				Unknown2:           222,
 			}
 
-			for i := 0; i < 3; i++ {
+			banners := make([]Banner, len(pics))
+			for i, banner := range dbBanners {
 				var textArray [51]uint16
-				tempText := utf16.Encode([]rune(dbBanners[i].GetTextForLanguage(language)))
+				tempText := utf16.Encode([]rune(banner.GetTextForLanguage(language)))
 				copy(textArray[:], tempText)
 
-				var offset uint32
-				if i == 0 {
-					offset = 640
-				} else if i == 1 {
-					offset = uint32(640 + len(pics[0]))
-				} else if i == 2 {
-					offset = uint32(640 + len(pics[0]) + len(pics[1]))
+				// Calculate current offset
+				offset := 640
+				for _, pic := range pics[:i] {
+					offset += len(pic)
 				}
 
-				header.Banners[i] = Banner{
+				banners[i] = Banner{
 					Text:          textArray,
 					PictureSize:   uint32(len(pics[i])),
-					PictureOffset: offset,
+					PictureOffset: uint32(offset),
 				}
 			}
 
+			header.Filesize = uint32(binary.Size(header) + (binary.Size(Banner{}) * len(pics)) + picsSize)
+
 			buffer := new(bytes.Buffer)
-
 			err = binary.Write(buffer, binary.BigEndian, header)
-			err = binary.Write(buffer, binary.BigEndian, pics[0])
-			err = binary.Write(buffer, binary.BigEndian, pics[1])
-			err = binary.Write(buffer, binary.BigEndian, pics[2])
-			common.CheckError(err)
-
-			header.Filesize = uint32(buffer.Len())
-			buffer.Reset()
-
-			err = binary.Write(buffer, binary.BigEndian, header)
-			err = binary.Write(buffer, binary.BigEndian, pics[0])
-			err = binary.Write(buffer, binary.BigEndian, pics[1])
-			err = binary.Write(buffer, binary.BigEndian, pics[2])
-			common.CheckError(err)
+			err = binary.Write(buffer, binary.BigEndian, banners)
+			for _, pic := range pics {
+				err = binary.Write(buffer, binary.BigEndian, pic)
+				common.CheckError(err)
+			}
 
 			// Calculate crc32
 			crcTable := crc32.MakeTable(crc32.IEEE)
 			checksum := crc32.Checksum(buffer.Bytes(), crcTable)
-			header.CRC32 = checksum
-			buffer.Reset()
-
-			err = binary.Write(buffer, binary.BigEndian, header)
-			err = binary.Write(buffer, binary.BigEndian, pics[0])
-			err = binary.Write(buffer, binary.BigEndian, pics[1])
-			err = binary.Write(buffer, binary.BigEndian, pics[2])
-			common.CheckError(err)
+			binary.BigEndian.PutUint32(buffer.Bytes()[8:], checksum)
 
 			compress, err := lz10.Compress(buffer.Bytes())
 			common.CheckError(err)
@@ -212,14 +195,14 @@ func CreateCSData() {
 			rsaKey, err := os.ReadFile(fmt.Sprintf("%s/nc.pem", config.AssetsPath))
 			common.CheckError(err)
 
-			encrypted, err := libwc24crypt.EncryptWC24(compress, key, iv, rsaKey)
+			_, err = libwc24crypt.EncryptWC24(compress, key, iv, rsaKey)
 			common.CheckError(err)
 
 			// Create directory just in case.
 			err = os.MkdirAll(fmt.Sprintf("%s/csdata/%d/%d", config.AssetsPath, region.Region, language), 0777)
 			common.CheckError(err)
 
-			err = os.WriteFile(fmt.Sprintf("%s/csdata/%d/%d/csdata.bin", config.AssetsPath, region.Region, language), encrypted, 0777)
+			err = os.WriteFile(fmt.Sprintf("%s/csdata/%d/%d/csdata.bin", config.AssetsPath, region.Region, language), compress, 0777)
 			common.CheckError(err)
 		}
 	}
