@@ -14,7 +14,6 @@ import (
 	"hash/crc32"
 	"io"
 	"os"
-	"runtime"
 	"sync"
 )
 
@@ -68,8 +67,7 @@ func MakeDownloadList(_generateTitles bool) {
 	info.GetTimePlayed(&ctx, pool)
 
 	wg := sync.WaitGroup{}
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	semaphore := make(chan struct{}, 3)
+	semaphore := make(chan any, 3)
 
 	wg.Add(10)
 	for _, region := range constants.Regions {
@@ -104,18 +102,14 @@ func MakeDownloadList(_generateTitles bool) {
 				list.MakeDetailedRatingTable()
 				list.WriteRatingImages()
 
+				list.Header.Filesize = list.GetCurrentSize()
+
 				temp := bytes.NewBuffer(nil)
-				list.WriteAll(temp)
-				list.Header.Filesize = uint32(temp.Len())
-				temp.Reset()
 				list.WriteAll(temp)
 
 				crcTable := crc32.MakeTable(crc32.IEEE)
 				checksum := crc32.Checksum(temp.Bytes(), crcTable)
-				list.Header.CRC32 = checksum
-
-				temp.Reset()
-				list.WriteAll(temp)
+				binary.BigEndian.PutUint32(temp.Bytes()[8:], checksum)
 
 				// Compress then write
 				compressed, err := lz10.Compress(temp.Bytes())
