@@ -35,10 +35,6 @@ func (l *List) MakeDemoTable() {
 	common.CheckError(err)
 
 	for i, demo := range demos {
-		if i == 6 {
-			break
-		}
-
 		var title [31]uint16
 		tempTitle := utf16.Encode([]rune(demo.Title))
 		copy(title[:], tempTitle)
