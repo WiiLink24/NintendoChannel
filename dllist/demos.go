@@ -34,7 +34,7 @@ func (l *List) MakeDemoTable() {
 	demos, err := dl.DemosTable()
 	common.CheckError(err)
 
-	for i, demo := range demos {
+	for _, demo := range demos {
 		var title [31]uint16
 		tempTitle := utf16.Encode([]rune(demo.Title))
 		copy(title[:], tempTitle)
@@ -44,7 +44,7 @@ func (l *List) MakeDemoTable() {
 		copy(subtitle[:], tempSubtitle)
 
 		l.DemoTable = append(l.DemoTable, DemoTable{
-			ID:            uint32(i),
+			ID:            demo.Id,
 			Title:         title,
 			Subtitle:      subtitle,
 			TitleID:       demo.Titleid,
