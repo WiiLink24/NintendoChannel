@@ -11,8 +11,8 @@ require (
 
 require (
 	github.com/jackc/pgx/v4 v4.17.2
-	golang.org/x/image v0.2.0
-	golang.org/x/text v0.5.0
+	golang.org/x/image v0.10.0
+	golang.org/x/text v0.11.0
 )
 
 require (
