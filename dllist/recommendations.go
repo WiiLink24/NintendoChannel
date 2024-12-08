@@ -19,7 +19,7 @@ type TitleRecommendation struct {
 	FemaleRecommendations   [8]constants.AgeRecommendationData
 }
 
-const QueryRecommendations = `SELECT COUNT(game_id), game_id FROM recommendations GROUP BY game_id`
+const QueryRecommendations = `SELECT game_id, COUNT(*) AS game_count FROM recommendations GROUP BY game_id`
 
 // BaseRecommendationColumnQuery is a query that allows for getting the amount of votes for any table.
 // $1: column value
