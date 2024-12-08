@@ -195,14 +195,14 @@ func CreateCSData() {
 			rsaKey, err := os.ReadFile(fmt.Sprintf("%s/nc.pem", config.AssetsPath))
 			common.CheckError(err)
 
-			_, err = libwc24crypt.EncryptWC24(compress, key, iv, rsaKey)
+			enc, err := libwc24crypt.EncryptWC24(compress, key, iv, rsaKey)
 			common.CheckError(err)
 
 			// Create directory just in case.
 			err = os.MkdirAll(fmt.Sprintf("%s/csdata/%d/%d", config.AssetsPath, region.Region, language), 0777)
 			common.CheckError(err)
 
-			err = os.WriteFile(fmt.Sprintf("%s/csdata/%d/%d/csdata.bin", config.AssetsPath, region.Region, language), compress, 0777)
+			err = os.WriteFile(fmt.Sprintf("%s/csdata/%d/%d/csdata.bin", config.AssetsPath, region.Region, language), enc, 0777)
 			common.CheckError(err)
 		}
 	}
