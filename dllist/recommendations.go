@@ -51,7 +51,7 @@ func BaseRecommendationColumnQuery(columnName string) string {
 	return fmt.Sprintf(_BaseRecommendationColumnQuery, columnName, columnName)
 }
 
-func (l *List) QueryRecommendations() {
+func PopulateRecommendations() {
 	rows, err := pool.Query(ctx, QueryRecommendations)
 	common.CheckError(err)
 
@@ -62,36 +62,7 @@ func (l *List) QueryRecommendations() {
 		err = rows.Scan(&count, &gameID)
 		common.CheckError(err)
 
-		// First see if this game could exist in all regions
-		isForRegion := false
-		if gameID[3:] == "A" || gameID[3:] == "B" || gameID[3:] == "U" || gameID[3:] == "X" {
-			isForRegion = true
-		} else {
-			// Now determine if the game exists for this region
-			switch l.region {
-			case constants.NTSC:
-				if gameID[3:] == "E" || gameID[3:] == "N" {
-					isForRegion = true
-				}
-				break
-			case constants.Japan:
-				if gameID[3:] == "J" {
-					isForRegion = true
-				}
-				break
-			case constants.PAL:
-				if gameID[3:] == "P" || gameID[3:] == "L" || gameID[3:] == "M" {
-					isForRegion = true
-				}
-				break
-			}
-		}
-
-		if !isForRegion {
-			continue
-		}
-
-		l.recommendations[gameID] = TitleRecommendation{
+		recommendations[gameID] = TitleRecommendation{
 			NumberOfRecommendations: count,
 			AllRecommendations:      constants.AgeRecommendationTable,
 			MaleRecommendations:     constants.AgeRecommendationTable,
@@ -100,7 +71,7 @@ func (l *List) QueryRecommendations() {
 
 		// We now have to query for all the different types of recommendation criteria
 		// First start with all.
-		for i, rec := range l.recommendations[gameID].AllRecommendations {
+		for i, rec := range recommendations[gameID].AllRecommendations {
 			// Appeal
 			var everyone int
 			err := pool.QueryRow(ctx, BaseRecommendationColumnQueryNoGender("appeal"), 0, gameID, rec.LowerAge, rec.UpperAge).Scan(&everyone)
@@ -115,16 +86,16 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if everyone < gamers {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.AllRecommendations[i].IsGamers = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if everyone != gamers {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.AllRecommendations[i].IsGamers = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 
@@ -142,16 +113,16 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if casual < hardcore {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.AllRecommendations[i].IsHardcore = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if casual != hardcore {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.AllRecommendations[i].IsHardcore = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 
@@ -169,22 +140,22 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if alone < friend {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.AllRecommendations[i].IsWithFriends = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if alone != friend {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.AllRecommendations[i].IsWithFriends = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 		}
 
 		// Next is Male.
-		for i, rec := range l.recommendations[gameID].MaleRecommendations {
+		for i, rec := range recommendations[gameID].MaleRecommendations {
 			// Appeal
 			var everyone int
 			err := pool.QueryRow(ctx, BaseRecommendationColumnQuery("appeal"), 0, gameID, 1, rec.LowerAge, rec.UpperAge).Scan(&everyone)
@@ -199,16 +170,16 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if everyone < gamers {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.MaleRecommendations[i].IsGamers = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if everyone != gamers {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.MaleRecommendations[i].IsGamers = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 
@@ -226,16 +197,16 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if casual < hardcore {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.MaleRecommendations[i].IsHardcore = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if casual != hardcore {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.MaleRecommendations[i].IsHardcore = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 
@@ -253,22 +224,22 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if alone < friend {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.MaleRecommendations[i].IsWithFriends = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if alone != friend {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.MaleRecommendations[i].IsWithFriends = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 		}
 
 		// Finally is Female.
-		for i, rec := range l.recommendations[gameID].FemaleRecommendations {
+		for i, rec := range recommendations[gameID].FemaleRecommendations {
 			// Appeal
 			var everyone int
 			err := pool.QueryRow(ctx, BaseRecommendationColumnQuery("appeal"), 0, gameID, 2, rec.LowerAge, rec.UpperAge).Scan(&everyone)
@@ -283,16 +254,16 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if everyone < gamers {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.FemaleRecommendations[i].IsGamers = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if everyone != gamers {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.FemaleRecommendations[i].IsGamers = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 
@@ -310,16 +281,16 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if casual < hardcore {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.FemaleRecommendations[i].IsHardcore = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if casual != hardcore {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.FemaleRecommendations[i].IsHardcore = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 
@@ -337,16 +308,16 @@ func (l *List) QueryRecommendations() {
 			}
 
 			if alone < friend {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.FemaleRecommendations[i].IsWithFriends = constants.True
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			} else if alone != friend {
-				if entry, ok := l.recommendations[gameID]; ok {
+				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
 					entry.FemaleRecommendations[i].IsWithFriends = constants.False
-					l.recommendations[gameID] = entry
+					recommendations[gameID] = entry
 				}
 			}
 		}
@@ -356,7 +327,7 @@ func (l *List) QueryRecommendations() {
 func (l *List) MakeRecommendationTable() {
 	l.Header.RecommendationTableOffset = l.GetCurrentSize()
 
-	for gameID, _ := range l.recommendations {
+	for gameID, _ := range recommendations {
 		// Now we find the title from our title table
 		for i, title := range l.TitleTable {
 			if string(title.TitleID[:]) == gameID {
@@ -372,7 +343,7 @@ func (l *List) MakeRecommendationTable() {
 func (l *List) MakeRecentRecommendationTable() {
 	l.Header.RecentRecommendationTableOffset = l.GetCurrentSize()
 
-	for gameID, num := range l.recommendations {
+	for gameID, num := range recommendations {
 		for i, title := range l.TitleTable {
 			if string(title.TitleID[:]) == gameID {
 				l.RecentRecommendationTable = append(l.RecentRecommendationTable, RecentRecommendationTable{

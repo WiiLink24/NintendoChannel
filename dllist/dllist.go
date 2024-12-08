@@ -37,9 +37,7 @@ type List struct {
 	region      constants.Region
 	ratingGroup constants.RatingGroup
 	language    constants.Language
-	// map[game_id]amount_voted
-	recommendations map[string]TitleRecommendation
-	imageBuffer     *bytes.Buffer
+	imageBuffer *bytes.Buffer
 }
 
 var (
@@ -47,6 +45,8 @@ var (
 	pool           *pgxpool.Pool
 	ctx            = context.Background()
 	generateTitles bool
+	// map[game_id]amount_voted
+	recommendations = map[string]TitleRecommendation{}
 )
 
 func MakeDownloadList(_generateTitles bool) {
@@ -65,6 +65,7 @@ func MakeDownloadList(_generateTitles bool) {
 	defer pool.Close()
 	gametdb.PrepareGameTDB()
 	info.GetTimePlayed(&ctx, pool)
+	PopulateRecommendations()
 
 	wg := sync.WaitGroup{}
 	semaphore := make(chan any, 3)
@@ -78,14 +79,11 @@ func MakeDownloadList(_generateTitles bool) {
 				semaphore <- struct{}{}
 				fmt.Printf("Starting worker - Region: %d, Language: %d\n", _region.Region, _language)
 				list := List{
-					region:          _region.Region,
-					ratingGroup:     _region.RatingGroup,
-					language:        _language,
-					imageBuffer:     new(bytes.Buffer),
-					recommendations: map[string]TitleRecommendation{},
+					region:      _region.Region,
+					ratingGroup: _region.RatingGroup,
+					language:    _language,
+					imageBuffer: new(bytes.Buffer),
 				}
-
-				list.QueryRecommendations()
 
 				list.MakeHeader()
 				list.MakeRatingsTable()
