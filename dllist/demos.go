@@ -24,17 +24,21 @@ type DemoTable struct {
 	_             [205]byte
 }
 
-func (l *List) MakeDemoTable() {
-	l.Header.DemoTableOffset = l.GetCurrentSize()
+var demosTable []*NinchDllist_DemosTable
 
+func PopulateDemos() {
 	dl := NewNinchDllist()
 	err := dl.Read(kaitai.NewStream(bytes.NewReader(constants.DLList)), nil, dl)
 	common.CheckError(err)
 
-	demos, err := dl.DemosTable()
+	demosTable, err = dl.DemosTable()
 	common.CheckError(err)
+}
 
-	for _, demo := range demos {
+func (l *List) MakeDemoTable() {
+	l.Header.DemoTableOffset = l.GetCurrentSize()
+
+	for _, demo := range demosTable {
 		var title [31]uint16
 		tempTitle := utf16.Encode([]rune(demo.Title))
 		copy(title[:], tempTitle)

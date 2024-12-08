@@ -66,6 +66,7 @@ func MakeDownloadList(_generateTitles bool) {
 	gametdb.PrepareGameTDB()
 	info.GetTimePlayed(&ctx, pool)
 	PopulateRecommendations()
+	PopulateDemos()
 
 	wg := sync.WaitGroup{}
 	semaphore := make(chan any, 3)
