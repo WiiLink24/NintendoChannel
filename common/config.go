@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+var config Config
+
 type Config struct {
 	Username        string `xml:"username"`
 	Password        string `xml:"password"`
@@ -21,11 +23,13 @@ func CheckError(err error) {
 }
 
 func GetConfig() Config {
+	if config.DatabaseName != "" {
+		return config
+	}
+
 	data, err := os.ReadFile("config.xml")
 	CheckError(err)
 
-	var config Config
 	err = xml.Unmarshal(data, &config)
-
 	return config
 }
