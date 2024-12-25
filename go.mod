@@ -1,6 +1,8 @@
 module NintendoChannel
 
-go 1.19
+go 1.21
+
+toolchain go1.22.4
 
 require (
 	github.com/SketchMaster2001/libwc24crypt v0.0.0-20221114191055-b7fc8eef33ba
@@ -11,8 +13,10 @@ require (
 
 require (
 	github.com/jackc/pgx/v4 v4.17.2
+	github.com/jackc/pgx/v5 v5.7.2
+	github.com/wii-tools/libtpl v0.0.0-20240108143603-e66a8e51037d
 	golang.org/x/image v0.2.0
-	golang.org/x/text v0.5.0
+	golang.org/x/text v0.21.0
 )
 
 require (
@@ -21,9 +25,10 @@ require (
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.1 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgtype v1.12.0 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
-	github.com/wii-tools/libtpl v0.0.0-20240108143603-e66a8e51037d // indirect
-	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
 )
