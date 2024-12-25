@@ -4,7 +4,7 @@ import (
 	"NintendoChannel/common"
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
-	"NintendoChannel/info"
+	"NintendoChannel/v6/info"
 	"bytes"
 	"context"
 	"encoding/binary"

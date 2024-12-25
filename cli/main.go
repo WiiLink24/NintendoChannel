@@ -1,9 +1,9 @@
 package main
 
 import (
-	"NintendoChannel/csdata"
-	"NintendoChannel/dllist"
-	"NintendoChannel/thumbnail"
+	"NintendoChannel/v6/csdata"
+	"NintendoChannel/v6/dllist"
+	"NintendoChannel/v6/thumbnail"
 	"fmt"
 )
 

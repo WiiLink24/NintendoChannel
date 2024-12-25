@@ -7,8 +7,8 @@ import (
 	"io"
 )
 
-
 type NinchDllist_Genre int
+
 const (
 	NinchDllist_Genre__Action       NinchDllist_Genre = 1
 	NinchDllist_Genre__Adventure    NinchDllist_Genre = 2
@@ -29,18 +29,21 @@ const (
 )
 
 type NinchDllist_YesNo int
+
 const (
 	NinchDllist_YesNo__True  NinchDllist_YesNo = 0
 	NinchDllist_YesNo__False NinchDllist_YesNo = 1
 )
 
 type NinchDllist_EveryoneGamers int
+
 const (
 	NinchDllist_EveryoneGamers__Gamers   NinchDllist_EveryoneGamers = 0
 	NinchDllist_EveryoneGamers__Everyone NinchDllist_EveryoneGamers = 1
 )
 
 type NinchDllist_Medal int
+
 const (
 	NinchDllist_Medal__None     NinchDllist_Medal = 0
 	NinchDllist_Medal__Bronze   NinchDllist_Medal = 1
@@ -50,6 +53,7 @@ const (
 )
 
 type NinchDllist_Platforms int
+
 const (
 	NinchDllist_Platforms__None            NinchDllist_Platforms = 0
 	NinchDllist_Platforms__Wii             NinchDllist_Platforms = 1
@@ -73,6 +77,7 @@ const (
 )
 
 type NinchDllist_RatingGroup int
+
 const (
 	NinchDllist_RatingGroup__Cero     NinchDllist_RatingGroup = 1
 	NinchDllist_RatingGroup__Esrb     NinchDllist_RatingGroup = 2
@@ -86,18 +91,21 @@ const (
 )
 
 type NinchDllist_AloneWithFriends int
+
 const (
 	NinchDllist_AloneWithFriends__WithFriends NinchDllist_AloneWithFriends = 0
 	NinchDllist_AloneWithFriends__Alone       NinchDllist_AloneWithFriends = 1
 )
 
 type NinchDllist_CasualHardcore int
+
 const (
 	NinchDllist_CasualHardcore__Hardcore NinchDllist_CasualHardcore = 0
 	NinchDllist_CasualHardcore__Casual   NinchDllist_CasualHardcore = 1
 )
 
 type NinchDllist_VideoType int
+
 const (
 	NinchDllist_VideoType__None                  NinchDllist_VideoType = 0
 	NinchDllist_VideoType__Wii                   NinchDllist_VideoType = 1
@@ -110,80 +118,81 @@ const (
 	NinchDllist_VideoType__Threeds               NinchDllist_VideoType = 8
 	NinchDllist_VideoType__ThreedsVirtualConsole NinchDllist_VideoType = 10
 )
+
 type NinchDllist struct {
-	Unknown uint16
-	Version uint8
-	UnknownRegion uint8
-	Filesize uint32
-	Crc32 uint32
-	Dllistid uint32
-	ThumbnailId uint32
-	CountryCode uint32
-	LanguageCode uint32
-	Unknown2 []uint8
-	RatingsEntryNumber uint32
-	RatingsTableOffset uint32
-	TitleTypesEntryNumber uint32
-	TitleTypesTableOffset uint32
-	CompanyEntryNumber uint32
-	CompanyTableOffset uint32
-	TitleEntryNumber uint32
-	TitleTableOffset uint32
-	NewTitleEntryNumber uint32
-	NewTitleTableOffset uint32
-	Videos1EntryNumber uint32
-	Videos1TableOffset uint32
-	NewVideoEntryNumber uint32
-	NewVideoTableOffset uint32
-	DemosEntryNumber uint32
-	DemosTableOffset uint32
-	Unknown5 uint32
-	Unknown6 uint32
-	RecommendationsEntryNumber uint32
-	RecommendationsTableOffset uint32
-	Unknown7 []uint32
+	Unknown                          uint16
+	Version                          uint8
+	UnknownRegion                    uint8
+	Filesize                         uint32
+	Crc32                            uint32
+	Dllistid                         uint32
+	ThumbnailId                      uint32
+	CountryCode                      uint32
+	LanguageCode                     uint32
+	Unknown2                         []uint8
+	RatingsEntryNumber               uint32
+	RatingsTableOffset               uint32
+	TitleTypesEntryNumber            uint32
+	TitleTypesTableOffset            uint32
+	CompanyEntryNumber               uint32
+	CompanyTableOffset               uint32
+	TitleEntryNumber                 uint32
+	TitleTableOffset                 uint32
+	NewTitleEntryNumber              uint32
+	NewTitleTableOffset              uint32
+	Videos1EntryNumber               uint32
+	Videos1TableOffset               uint32
+	NewVideoEntryNumber              uint32
+	NewVideoTableOffset              uint32
+	DemosEntryNumber                 uint32
+	DemosTableOffset                 uint32
+	Unknown5                         uint32
+	Unknown6                         uint32
+	RecommendationsEntryNumber       uint32
+	RecommendationsTableOffset       uint32
+	Unknown7                         []uint32
 	RecentRecommendationsEntryNumber uint32
 	RecentRecommendationsTableOffset uint32
-	Unknown8 []uint32
-	PopularVideosEntryNumber uint32
-	PopularVideosTableOffset uint32
-	DetailedRatingsEntryNumber uint32
-	DetailedRatingsTableOffset uint32
-	LastUpdate string
-	Unknown9 []uint8
-	DlUrlIds []string
-	Unknown10 uint32
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent interface{}
-	_f_demosTable bool
-	demosTable []*NinchDllist_DemosTable
-	_f_ratingsTable bool
-	ratingsTable []*NinchDllist_RatingsTable
-	_f_videos1Table bool
-	videos1Table []*NinchDllist_Videos1Table
-	_f_recentRecommendationsTable bool
-	recentRecommendationsTable []*NinchDllist_RecentRecommendationsTable
-	_f_titleTable bool
-	titleTable []*NinchDllist_TitleTable
-	_f_detailedRatingsTable bool
-	detailedRatingsTable []*NinchDllist_DetailedRatingsTable
-	_f_popularVideosTable bool
-	popularVideosTable []*NinchDllist_PopularVideosTable
-	_f_titleTypesTable bool
-	titleTypesTable []*NinchDllist_TitleTypesTable
-	_f_recommendationsTable bool
-	recommendationsTable []*NinchDllist_RecommendationsTable
-	_f_newVideoTable bool
-	newVideoTable []*NinchDllist_NewVideoTable
-	_f_newTitleTable bool
-	newTitleTable []*NinchDllist_NewTitleTable
-	_f_companyTable bool
-	companyTable []*NinchDllist_CompanyTable
+	Unknown8                         []uint32
+	PopularVideosEntryNumber         uint32
+	PopularVideosTableOffset         uint32
+	DetailedRatingsEntryNumber       uint32
+	DetailedRatingsTableOffset       uint32
+	LastUpdate                       string
+	Unknown9                         []uint8
+	DlUrlIds                         []string
+	Unknown10                        uint32
+	_io                              *kaitai.Stream
+	_root                            *NinchDllist
+	_parent                          interface{}
+	_f_demosTable                    bool
+	demosTable                       []*NinchDllist_DemosTable
+	_f_ratingsTable                  bool
+	ratingsTable                     []*NinchDllist_RatingsTable
+	_f_videos1Table                  bool
+	videos1Table                     []*NinchDllist_Videos1Table
+	_f_recentRecommendationsTable    bool
+	recentRecommendationsTable       []*NinchDllist_RecentRecommendationsTable
+	_f_titleTable                    bool
+	titleTable                       []*NinchDllist_TitleTable
+	_f_detailedRatingsTable          bool
+	detailedRatingsTable             []*NinchDllist_DetailedRatingsTable
+	_f_popularVideosTable            bool
+	popularVideosTable               []*NinchDllist_PopularVideosTable
+	_f_titleTypesTable               bool
+	titleTypesTable                  []*NinchDllist_TitleTypesTable
+	_f_recommendationsTable          bool
+	recommendationsTable             []*NinchDllist_RecommendationsTable
+	_f_newVideoTable                 bool
+	newVideoTable                    []*NinchDllist_NewVideoTable
+	_f_newTitleTable                 bool
+	newTitleTable                    []*NinchDllist_NewTitleTable
+	_f_companyTable                  bool
+	companyTable                     []*NinchDllist_CompanyTable
 }
+
 func NewNinchDllist() *NinchDllist {
-	return &NinchDllist{
-	}
+	return &NinchDllist{}
 }
 
 func (this *NinchDllist) Read(io *kaitai.Stream, parent interface{}, root *NinchDllist) (err error) {
@@ -425,7 +434,7 @@ func (this *NinchDllist) Read(io *kaitai.Stream, parent interface{}, root *Ninch
 	return err
 }
 func (this *NinchDllist) DemosTable() (v []*NinchDllist_DemosTable, err error) {
-	if (this._f_demosTable) {
+	if this._f_demosTable {
 		return this.demosTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -454,7 +463,7 @@ func (this *NinchDllist) DemosTable() (v []*NinchDllist_DemosTable, err error) {
 	return this.demosTable, nil
 }
 func (this *NinchDllist) RatingsTable() (v []*NinchDllist_RatingsTable, err error) {
-	if (this._f_ratingsTable) {
+	if this._f_ratingsTable {
 		return this.ratingsTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -483,7 +492,7 @@ func (this *NinchDllist) RatingsTable() (v []*NinchDllist_RatingsTable, err erro
 	return this.ratingsTable, nil
 }
 func (this *NinchDllist) Videos1Table() (v []*NinchDllist_Videos1Table, err error) {
-	if (this._f_videos1Table) {
+	if this._f_videos1Table {
 		return this.videos1Table, nil
 	}
 	_pos, err := this._io.Pos()
@@ -512,7 +521,7 @@ func (this *NinchDllist) Videos1Table() (v []*NinchDllist_Videos1Table, err erro
 	return this.videos1Table, nil
 }
 func (this *NinchDllist) RecentRecommendationsTable() (v []*NinchDllist_RecentRecommendationsTable, err error) {
-	if (this._f_recentRecommendationsTable) {
+	if this._f_recentRecommendationsTable {
 		return this.recentRecommendationsTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -541,7 +550,7 @@ func (this *NinchDllist) RecentRecommendationsTable() (v []*NinchDllist_RecentRe
 	return this.recentRecommendationsTable, nil
 }
 func (this *NinchDllist) TitleTable() (v []*NinchDllist_TitleTable, err error) {
-	if (this._f_titleTable) {
+	if this._f_titleTable {
 		return this.titleTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -570,7 +579,7 @@ func (this *NinchDllist) TitleTable() (v []*NinchDllist_TitleTable, err error) {
 	return this.titleTable, nil
 }
 func (this *NinchDllist) DetailedRatingsTable() (v []*NinchDllist_DetailedRatingsTable, err error) {
-	if (this._f_detailedRatingsTable) {
+	if this._f_detailedRatingsTable {
 		return this.detailedRatingsTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -599,7 +608,7 @@ func (this *NinchDllist) DetailedRatingsTable() (v []*NinchDllist_DetailedRating
 	return this.detailedRatingsTable, nil
 }
 func (this *NinchDllist) PopularVideosTable() (v []*NinchDllist_PopularVideosTable, err error) {
-	if (this._f_popularVideosTable) {
+	if this._f_popularVideosTable {
 		return this.popularVideosTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -628,7 +637,7 @@ func (this *NinchDllist) PopularVideosTable() (v []*NinchDllist_PopularVideosTab
 	return this.popularVideosTable, nil
 }
 func (this *NinchDllist) TitleTypesTable() (v []*NinchDllist_TitleTypesTable, err error) {
-	if (this._f_titleTypesTable) {
+	if this._f_titleTypesTable {
 		return this.titleTypesTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -657,7 +666,7 @@ func (this *NinchDllist) TitleTypesTable() (v []*NinchDllist_TitleTypesTable, er
 	return this.titleTypesTable, nil
 }
 func (this *NinchDllist) RecommendationsTable() (v []*NinchDllist_RecommendationsTable, err error) {
-	if (this._f_recommendationsTable) {
+	if this._f_recommendationsTable {
 		return this.recommendationsTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -686,7 +695,7 @@ func (this *NinchDllist) RecommendationsTable() (v []*NinchDllist_Recommendation
 	return this.recommendationsTable, nil
 }
 func (this *NinchDllist) NewVideoTable() (v []*NinchDllist_NewVideoTable, err error) {
-	if (this._f_newVideoTable) {
+	if this._f_newVideoTable {
 		return this.newVideoTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -715,7 +724,7 @@ func (this *NinchDllist) NewVideoTable() (v []*NinchDllist_NewVideoTable, err er
 	return this.newVideoTable, nil
 }
 func (this *NinchDllist) NewTitleTable() (v []*NinchDllist_NewTitleTable, err error) {
-	if (this._f_newTitleTable) {
+	if this._f_newTitleTable {
 		return this.newTitleTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -744,7 +753,7 @@ func (this *NinchDllist) NewTitleTable() (v []*NinchDllist_NewTitleTable, err er
 	return this.newTitleTable, nil
 }
 func (this *NinchDllist) CompanyTable() (v []*NinchDllist_CompanyTable, err error) {
-	if (this._f_companyTable) {
+	if this._f_companyTable {
 		return this.companyTable, nil
 	}
 	_pos, err := this._io.Pos()
@@ -781,18 +790,18 @@ func (this *NinchDllist) CompanyTable() (v []*NinchDllist_CompanyTable, err erro
  * Part of the path in the URL for the Nintendo Channel files.
  */
 type NinchDllist_NewVideoTable struct {
-	Id uint32
-	Unknown uint16
-	TitleId uint32
+	Id       uint32
+	Unknown  uint16
+	TitleId  uint32
 	Unknown2 []uint8
-	Title string
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	Title    string
+	_io      *kaitai.Stream
+	_root    *NinchDllist
+	_parent  *NinchDllist
 }
+
 func NewNinchDllist_NewVideoTable() *NinchDllist_NewVideoTable {
-	return &NinchDllist_NewVideoTable{
-	}
+	return &NinchDllist_NewVideoTable{}
 }
 
 func (this *NinchDllist_NewVideoTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -844,16 +853,16 @@ func (this *NinchDllist_NewVideoTable) Read(io *kaitai.Stream, parent *NinchDlli
  * Time length?
  */
 type NinchDllist_RecommendationsTable struct {
-	RecommendationTitleOffset uint32
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	RecommendationTitleOffset   uint32
+	_io                         *kaitai.Stream
+	_root                       *NinchDllist
+	_parent                     *NinchDllist
 	_f_recommendationTitleEntry bool
-	recommendationTitleEntry *NinchDllist_TitleTable
+	recommendationTitleEntry    *NinchDllist_TitleTable
 }
+
 func NewNinchDllist_RecommendationsTable() *NinchDllist_RecommendationsTable {
-	return &NinchDllist_RecommendationsTable{
-	}
+	return &NinchDllist_RecommendationsTable{}
 }
 
 func (this *NinchDllist_RecommendationsTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -869,7 +878,7 @@ func (this *NinchDllist_RecommendationsTable) Read(io *kaitai.Stream, parent *Ni
 	return err
 }
 func (this *NinchDllist_RecommendationsTable) RecommendationTitleEntry() (v *NinchDllist_TitleTable, err error) {
-	if (this._f_recommendationTitleEntry) {
+	if this._f_recommendationTitleEntry {
 		return this.recommendationTitleEntry, nil
 	}
 	_pos, err := this._io.Pos()
@@ -894,17 +903,18 @@ func (this *NinchDllist_RecommendationsTable) RecommendationTitleEntry() (v *Nin
 	this._f_recommendationTitleEntry = true
 	return this.recommendationTitleEntry, nil
 }
+
 type NinchDllist_NewTitleTable struct {
-	NewTitleOffset uint32
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	NewTitleOffset   uint32
+	_io              *kaitai.Stream
+	_root            *NinchDllist
+	_parent          *NinchDllist
 	_f_newTitleEntry bool
-	newTitleEntry *NinchDllist_TitleTable
+	newTitleEntry    *NinchDllist_TitleTable
 }
+
 func NewNinchDllist_NewTitleTable() *NinchDllist_NewTitleTable {
-	return &NinchDllist_NewTitleTable{
-	}
+	return &NinchDllist_NewTitleTable{}
 }
 
 func (this *NinchDllist_NewTitleTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -920,7 +930,7 @@ func (this *NinchDllist_NewTitleTable) Read(io *kaitai.Stream, parent *NinchDlli
 	return err
 }
 func (this *NinchDllist_NewTitleTable) NewTitleEntry() (v *NinchDllist_TitleTable, err error) {
-	if (this._f_newTitleEntry) {
+	if this._f_newTitleEntry {
 		return this.newTitleEntry, nil
 	}
 	_pos, err := this._io.Pos()
@@ -945,17 +955,18 @@ func (this *NinchDllist_NewTitleTable) NewTitleEntry() (v *NinchDllist_TitleTabl
 	this._f_newTitleEntry = true
 	return this.newTitleEntry, nil
 }
+
 type NinchDllist_DetailedRatingsTable struct {
 	RatingGroup uint8
-	RatingId uint8
-	Title string
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	RatingId    uint8
+	Title       string
+	_io         *kaitai.Stream
+	_root       *NinchDllist
+	_parent     *NinchDllist
 }
+
 func NewNinchDllist_DetailedRatingsTable() *NinchDllist_DetailedRatingsTable {
-	return &NinchDllist_DetailedRatingsTable{
-	}
+	return &NinchDllist_DetailedRatingsTable{}
 }
 
 func (this *NinchDllist_DetailedRatingsTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -985,17 +996,18 @@ func (this *NinchDllist_DetailedRatingsTable) Read(io *kaitai.Stream, parent *Ni
 	this.Title = tmp69
 	return err
 }
+
 type NinchDllist_CompanyTable struct {
-	Id uint32
+	Id       uint32
 	DevTitle string
 	PubTitle string
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent interface{}
+	_io      *kaitai.Stream
+	_root    *NinchDllist
+	_parent  interface{}
 }
+
 func NewNinchDllist_CompanyTable() *NinchDllist_CompanyTable {
-	return &NinchDllist_CompanyTable{
-	}
+	return &NinchDllist_CompanyTable{}
 }
 
 func (this *NinchDllist_CompanyTable) Read(io *kaitai.Stream, parent interface{}, root *NinchDllist) (err error) {
@@ -1030,24 +1042,25 @@ func (this *NinchDllist_CompanyTable) Read(io *kaitai.Stream, parent interface{}
 	this.PubTitle = tmp74
 	return err
 }
+
 type NinchDllist_PopularVideosTable struct {
-	Id uint32
+	Id         uint32
 	TimeLength uint16
-	TitleId uint32
-	BarColor uint8
-	Unknown2 []uint8
-	RatingId uint8
-	Unknown3 uint8
-	VideoRank uint8
-	Unknown4 uint8
-	Title string
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	TitleId    uint32
+	BarColor   uint8
+	Unknown2   []uint8
+	RatingId   uint8
+	Unknown3   uint8
+	VideoRank  uint8
+	Unknown4   uint8
+	Title      string
+	_io        *kaitai.Stream
+	_root      *NinchDllist
+	_parent    *NinchDllist
 }
+
 func NewNinchDllist_PopularVideosTable() *NinchDllist_PopularVideosTable {
-	return &NinchDllist_PopularVideosTable{
-	}
+	return &NinchDllist_PopularVideosTable{}
 }
 
 func (this *NinchDllist_PopularVideosTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -1124,17 +1137,17 @@ func (this *NinchDllist_PopularVideosTable) Read(io *kaitai.Stream, parent *Ninc
  * 0 for grey, 1 for blue, 8 for red
  */
 type NinchDllist_RecentRecommendationsTable struct {
-	RecentRecommendationTitleOffset uint32
-	Unknown uint16
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	RecentRecommendationTitleOffset   uint32
+	Unknown                           uint16
+	_io                               *kaitai.Stream
+	_root                             *NinchDllist
+	_parent                           *NinchDllist
 	_f_recentRecommendationTitleEntry bool
-	recentRecommendationTitleEntry *NinchDllist_TitleTable
+	recentRecommendationTitleEntry    *NinchDllist_TitleTable
 }
+
 func NewNinchDllist_RecentRecommendationsTable() *NinchDllist_RecentRecommendationsTable {
-	return &NinchDllist_RecentRecommendationsTable{
-	}
+	return &NinchDllist_RecentRecommendationsTable{}
 }
 
 func (this *NinchDllist_RecentRecommendationsTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -1155,7 +1168,7 @@ func (this *NinchDllist_RecentRecommendationsTable) Read(io *kaitai.Stream, pare
 	return err
 }
 func (this *NinchDllist_RecentRecommendationsTable) RecentRecommendationTitleEntry() (v *NinchDllist_TitleTable, err error) {
-	if (this._f_recentRecommendationTitleEntry) {
+	if this._f_recentRecommendationTitleEntry {
 		return this.recentRecommendationTitleEntry, nil
 	}
 	_pos, err := this._io.Pos()
@@ -1180,19 +1193,20 @@ func (this *NinchDllist_RecentRecommendationsTable) RecentRecommendationTitleEnt
 	this._f_recentRecommendationTitleEntry = true
 	return this.recentRecommendationTitleEntry, nil
 }
+
 type NinchDllist_TitleTypesTable struct {
-	TypeId uint8
+	TypeId       uint8
 	ConsoleModel string
-	Title string
-	GroupId uint8
-	Unknown uint8
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	Title        string
+	GroupId      uint8
+	Unknown      uint8
+	_io          *kaitai.Stream
+	_root        *NinchDllist
+	_parent      *NinchDllist
 }
+
 func NewNinchDllist_TitleTypesTable() *NinchDllist_TitleTypesTable {
-	return &NinchDllist_TitleTypesTable{
-	}
+	return &NinchDllist_TitleTypesTable{}
 }
 
 func (this *NinchDllist_TitleTypesTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -1245,17 +1259,17 @@ type NinchDllist_RatingsTable struct {
 	RatingId    uint8
 	RatingGroup NinchDllist_RatingGroup
 	Age         uint8
-	Unknown uint8
-	JpegOffset uint32
-	JpegSize uint32
-	Title string
+	Unknown     uint8
+	JpegOffset  uint32
+	JpegSize    uint32
+	Title       string
 	_io         *kaitai.Stream
 	_root       *NinchDllist
 	_parent     *NinchDllist
 }
+
 func NewNinchDllist_RatingsTable() *NinchDllist_RatingsTable {
-	return &NinchDllist_RatingsTable{
-	}
+	return &NinchDllist_RatingsTable{}
 }
 
 func (this *NinchDllist_RatingsTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -1314,25 +1328,25 @@ func (this *NinchDllist_RatingsTable) Read(io *kaitai.Stream, parent *NinchDllis
  * Offset for a picture of this rating.
  */
 type NinchDllist_Videos1Table struct {
-	Id uint32
+	Id         uint32
 	TimeLength uint16
-	TitleId   uint32
-	VideoType NinchDllist_VideoType
-	Unknown   []uint8
-	Unknown2 uint8
-	RatingId uint8
-	Unknown3 uint8
-	NewTag uint8
+	TitleId    uint32
+	VideoType  NinchDllist_VideoType
+	Unknown    []uint8
+	Unknown2   uint8
+	RatingId   uint8
+	Unknown3   uint8
+	NewTag     uint8
 	VideoIndex uint8
-	Unknown4 []uint8
-	Title string
-	_io       *kaitai.Stream
-	_root     *NinchDllist
-	_parent   *NinchDllist
+	Unknown4   []uint8
+	Title      string
+	_io        *kaitai.Stream
+	_root      *NinchDllist
+	_parent    *NinchDllist
 }
+
 func NewNinchDllist_Videos1Table() *NinchDllist_Videos1Table {
-	return &NinchDllist_Videos1Table{
-	}
+	return &NinchDllist_Videos1Table{}
 }
 
 func (this *NinchDllist_Videos1Table) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -1426,16 +1440,16 @@ func (this *NinchDllist_Videos1Table) Read(io *kaitai.Stream, parent *NinchDllis
  * The associated title entry's ID.
  */
 type NinchDllist_TitleTable struct {
-	Id uint32
+	Id                                uint32
 	TitleId                           string
 	TitleType                         NinchDllist_Platforms
 	Genre                             []NinchDllist_Genre
 	CompanyOffset                     uint32
-	ReleaseDateYear uint16
-	ReleaseDateMonth uint8
-	ReleaseDateDay uint8
-	RatingId uint8
-	Unknown1 []uint8
+	ReleaseDateYear                   uint16
+	ReleaseDateMonth                  uint8
+	ReleaseDateDay                    uint8
+	RatingId                          uint8
+	Unknown1                          []uint8
 	Unknown2                          bool
 	CasualHardcore1                   NinchDllist_CasualHardcore
 	Unknown3                          bool
@@ -1498,18 +1512,18 @@ type NinchDllist_TitleTable struct {
 	Unknown19                         uint64
 	Medal                             NinchDllist_Medal
 	Unknown20                         []uint8
-	Title string
-	Subtitle string
-	ShortTitle string
+	Title                             string
+	Subtitle                          string
+	ShortTitle                        string
 	_io                               *kaitai.Stream
 	_root                             *NinchDllist
 	_parent                           interface{}
 	_f_companyEntry                   bool
 	companyEntry                      *NinchDllist_CompanyTable
 }
+
 func NewNinchDllist_TitleTable() *NinchDllist_TitleTable {
-	return &NinchDllist_TitleTable{
-	}
+	return &NinchDllist_TitleTable{}
 }
 
 func (this *NinchDllist_TitleTable) Read(io *kaitai.Stream, parent interface{}, root *NinchDllist) (err error) {
@@ -1929,7 +1943,7 @@ func (this *NinchDllist_TitleTable) Read(io *kaitai.Stream, parent interface{}, 
 	return err
 }
 func (this *NinchDllist_TitleTable) CompanyEntry() (v *NinchDllist_CompanyTable, err error) {
-	if (this._f_companyEntry) {
+	if this._f_companyEntry {
 		return this.companyEntry, nil
 	}
 	_pos, err := this._io.Pos()
@@ -1967,28 +1981,28 @@ func (this *NinchDllist_TitleTable) CompanyEntry() (v *NinchDllist_CompanyTable,
  * Null when there's no release date.
  */
 type NinchDllist_DemosTable struct {
-	Id uint32
-	Title string
-	Subtitle string
-	Titleid uint32
-	CompanyOffset uint32
-	RemovalYear uint16
-	RemovalMonth uint8
-	RemovalDay uint8
-	Unknown uint32
-	RatingId uint8
-	NewTag uint8
-	NewTagIndex uint8
-	Unknown2 []uint8
-	_io *kaitai.Stream
-	_root *NinchDllist
-	_parent *NinchDllist
+	Id              uint32
+	Title           string
+	Subtitle        string
+	Titleid         uint32
+	CompanyOffset   uint32
+	RemovalYear     uint16
+	RemovalMonth    uint8
+	RemovalDay      uint8
+	Unknown         uint32
+	RatingId        uint8
+	NewTag          uint8
+	NewTagIndex     uint8
+	Unknown2        []uint8
+	_io             *kaitai.Stream
+	_root           *NinchDllist
+	_parent         *NinchDllist
 	_f_companyEntry bool
-	companyEntry *NinchDllist_CompanyTable
+	companyEntry    *NinchDllist_CompanyTable
 }
+
 func NewNinchDllist_DemosTable() *NinchDllist_DemosTable {
-	return &NinchDllist_DemosTable{
-	}
+	return &NinchDllist_DemosTable{}
 }
 
 func (this *NinchDllist_DemosTable) Read(io *kaitai.Stream, parent *NinchDllist, root *NinchDllist) (err error) {
@@ -2077,7 +2091,7 @@ func (this *NinchDllist_DemosTable) Read(io *kaitai.Stream, parent *NinchDllist,
 	return err
 }
 func (this *NinchDllist_DemosTable) CompanyEntry() (v *NinchDllist_CompanyTable, err error) {
-	if (this._f_companyEntry) {
+	if this._f_companyEntry {
 		return this.companyEntry, nil
 	}
 	_pos, err := this._io.Pos()
