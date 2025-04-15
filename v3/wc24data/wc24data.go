@@ -51,7 +51,7 @@ func MakeList() {
 	common.CheckError(err)
 
 	defer pool.Close()
-	gametdb.PrepareGameTDB()
+	gametdb.PrepareGameTDB(config)
 	PopulateRecommendations()
 
 	wg := sync.WaitGroup{}

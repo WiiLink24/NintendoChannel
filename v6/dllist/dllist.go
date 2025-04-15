@@ -63,7 +63,7 @@ func MakeDownloadList(_generateTitles bool) {
 
 	// Ensure this Postgresql connection is valid.
 	defer pool.Close()
-	gametdb.PrepareGameTDB()
+	gametdb.PrepareGameTDB(config)
 	info.GetTimePlayed(&ctx, pool)
 	PopulateRecommendations()
 	PopulateDemos()
