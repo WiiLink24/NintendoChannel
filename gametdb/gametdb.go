@@ -77,11 +77,13 @@ var (
 	tdbNames = []string{"wiitdb", "dstdb", "3dstdb"}
 )
 
-func PrepareGameTDB() {
+func PrepareGameTDB(config common.Config) {
 	fmt.Println("Downloading GameTDB XML's...")
 	client := &http.Client{}
 
 	for i, name := range tdbNames {
+		zipOut := fmt.Sprintf("%s/tdb.zip", config.AssetsPath)
+
 		fmt.Println("Downloading " + name + "...")
 		req, err := http.NewRequest("GET", fmt.Sprintf("https://www.gametdb.com/%s.zip", name), nil)
 		common.CheckError(err)
@@ -95,11 +97,11 @@ func PrepareGameTDB() {
 		contents, err := io.ReadAll(response.Body)
 		common.CheckError(err)
 
-		err = os.WriteFile("./tdb.zip", contents, 0666)
+		err = os.WriteFile(zipOut, contents, 0666)
 		common.CheckError(err)
 
 		// We need to unzip before we proceed to unmarshalling
-		r, err := zip.OpenReader("./tdb.zip")
+		r, err := zip.OpenReader(zipOut)
 		common.CheckError(err)
 
 		fp, err := r.Open(fmt.Sprintf("%s.xml", name))
@@ -121,7 +123,7 @@ func PrepareGameTDB() {
 			ThreeDSTDB = &gameTDB
 		}
 
-		err = os.Remove("./tdb.zip")
+		err = os.Remove(zipOut)
 		common.CheckError(err)
 
 		fmt.Println("Finished current XML.")
