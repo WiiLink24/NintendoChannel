@@ -95,11 +95,11 @@ func PrepareGameTDB() {
 		contents, err := io.ReadAll(response.Body)
 		common.CheckError(err)
 
-		err = os.WriteFile("tdb.zip", contents, 0666)
+		err = os.WriteFile("./tdb.zip", contents, 0666)
 		common.CheckError(err)
 
 		// We need to unzip before we proceed to unmarshalling
-		r, err := zip.OpenReader("tdb.zip")
+		r, err := zip.OpenReader("./tdb.zip")
 		common.CheckError(err)
 
 		fp, err := r.Open(fmt.Sprintf("%s.xml", name))
@@ -121,7 +121,7 @@ func PrepareGameTDB() {
 			ThreeDSTDB = &gameTDB
 		}
 
-		err = os.Remove("tdb.zip")
+		err = os.Remove("./tdb.zip")
 		common.CheckError(err)
 
 		fmt.Println("Finished current XML.")
