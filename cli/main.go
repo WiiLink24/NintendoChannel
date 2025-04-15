@@ -22,6 +22,7 @@ func main() {
 			log.Fatalln("Invalid selection")
 		}
 		selector(selection)
+		return
 	}
 
 	fmt.Println("WiiLink Nintendo Channel File Generator")
