@@ -14,6 +14,7 @@ type Config struct {
 	DatabaseAddress string `xml:"databaseAddress"`
 	DatabaseName    string `xml:"databaseName"`
 	AssetsPath      string `xml:"assetsPath"`
+	ImagesPath      string `xml:"imagesPath"`
 }
 
 func CheckError(err error) {

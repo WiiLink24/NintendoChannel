@@ -9,4 +9,5 @@
 
     <!-- Assets -->
     <assetsPath>assets</assetsPath>
+    <imagesPath>images</imagesPath>
 </Config>
