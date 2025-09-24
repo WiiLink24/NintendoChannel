@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
 
 type GameTDB struct {
@@ -77,28 +78,54 @@ var (
 	tdbNames = []string{"wiitdb", "dstdb", "3dstdb"}
 )
 
-func PrepareGameTDB(config common.Config) {
-	fmt.Println("Downloading GameTDB XML's...")
+func downloadTDBXML(name string, zipOut string) error {
 	client := &http.Client{}
 
+	fmt.Println("Downloading " + name + "...")
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://www.gametdb.com/%s.zip", name), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("User-Agent", "WiiLink Nintendo Channel File Generator/0.1")
+
+	response, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+	contents, err := io.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(zipOut, contents, 0666)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func PrepareGameTDB(config common.Config) {
+	fmt.Println("Downloading GameTDB XML's...")
+
 	for i, name := range tdbNames {
-		zipOut := fmt.Sprintf("%s/tdb.zip", config.AssetsPath)
+		zipOut := fmt.Sprintf("%s/%s.zip", config.AssetsPath, name)
 
-		fmt.Println("Downloading " + name + "...")
-		req, err := http.NewRequest("GET", fmt.Sprintf("https://www.gametdb.com/%s.zip", name), nil)
-		common.CheckError(err)
-
-		req.Header.Set("User-Agent", "WiiLink Nintendo Channel File Generator/0.1")
-
-		response, err := client.Do(req)
-		common.CheckError(err)
-
-		defer response.Body.Close()
-		contents, err := io.ReadAll(response.Body)
-		common.CheckError(err)
-
-		err = os.WriteFile(zipOut, contents, 0666)
-		common.CheckError(err)
+		info, err := os.Stat(zipOut)
+		if err == nil {
+			// If the file was made within the past day, don't download.
+			if info.ModTime().Add(time.Hour * 24 * 7).Before(time.Now()) {
+				err = downloadTDBXML(name, zipOut)
+				common.CheckError(err)
+			}
+			fmt.Println("Loaded " + name + ", skipping download")
+		} else {
+			err = downloadTDBXML(name, zipOut)
+			common.CheckError(err)
+		}
 
 		// We need to unzip before we proceed to unmarshalling
 		r, err := zip.OpenReader(zipOut)
@@ -107,7 +134,7 @@ func PrepareGameTDB(config common.Config) {
 		fp, err := r.Open(fmt.Sprintf("%s.xml", name))
 		common.CheckError(err)
 
-		contents, err = io.ReadAll(fp)
+		contents, err := io.ReadAll(fp)
 		common.CheckError(err)
 
 		var gameTDB GameTDB
@@ -122,9 +149,6 @@ func PrepareGameTDB(config common.Config) {
 		case 2:
 			ThreeDSTDB = &gameTDB
 		}
-
-		err = os.Remove(zipOut)
-		common.CheckError(err)
 
 		fmt.Println("Finished current XML.")
 	}
