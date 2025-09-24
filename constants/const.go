@@ -265,21 +265,24 @@ const (
 )
 
 type AgeRecommendationData struct {
-	LowerAge      int
-	UpperAge      int
-	IsGamers      CriteriaBool
-	IsHardcore    CriteriaBool
-	IsWithFriends CriteriaBool
+	LowerAge        int
+	UpperAge        int
+	IsGamers        CriteriaBool
+	IsHardcore      CriteriaBool
+	IsWithFriends   CriteriaBool
+	EveryonePercent uint8
+	CasualPercent   uint8
+	AlonePercent    uint8
 }
 
 // AgeRecommendationTable exists with the sole purpose of populating the age bounds.
 var AgeRecommendationTable = [8]AgeRecommendationData{
-	{0, 100, Nil, Nil, Nil},
-	{0, 12, Nil, Nil, Nil},
-	{13, 18, Nil, Nil, Nil},
-	{19, 24, Nil, Nil, Nil},
-	{25, 34, Nil, Nil, Nil},
-	{35, 44, Nil, Nil, Nil},
-	{45, 54, Nil, Nil, Nil},
-	{55, 100, Nil, Nil, Nil},
+	{0, 100, Nil, Nil, Nil, 0, 0, 0},
+	{0, 12, Nil, Nil, Nil, 0, 0, 0},
+	{13, 18, Nil, Nil, Nil, 0, 0, 0},
+	{19, 24, Nil, Nil, Nil, 0, 0, 0},
+	{25, 34, Nil, Nil, Nil, 0, 0, 0},
+	{35, 44, Nil, Nil, Nil, 0, 0, 0},
+	{45, 54, Nil, Nil, Nil, 0, 0, 0},
+	{55, 100, Nil, Nil, Nil, 0, 0, 0},
 }

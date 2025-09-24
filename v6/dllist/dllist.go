@@ -46,7 +46,7 @@ var (
 	ctx            = context.Background()
 	generateTitles bool
 	// map[game_id]amount_voted
-	recommendations = map[string]TitleRecommendation{}
+	recommendations = map[string]common.TitleRecommendation{}
 )
 
 func MakeDownloadList(_generateTitles bool) {

@@ -37,12 +37,13 @@ type Info struct {
 	CustomText           [10][41]uint16
 	// Writing a blank one if it doesn't exist and not point to it
 	// is way more efficient than writing everything individually
-	TimePlayed TimePlayed
+	TimePlayed          TimePlayed
+	RecommendationTable RecommendationTable
 }
 
 var timePlayed = map[string]TimePlayed{}
 
-func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType) {
+func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, recommendations map[string]common.TitleRecommendation) {
 	// Make other fields
 	i.GetSupportedControllers(&game.Controllers)
 	i.GetSupportedFeatures(&game.Features)
@@ -104,6 +105,11 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	if v, ok := timePlayed[game.ID[:4]]; ok {
 		i.Header.TimesPlayedTableOffset = 6744
 		i.TimePlayed = v
+	}
+
+	if v, ok := recommendations[game.ID[:4]]; ok {
+		i.Header.RatingTableOffset = 6744 + 16
+		i.MakeRecommendationTable(v)
 	}
 
 	temp := new(bytes.Buffer)

@@ -12,13 +12,6 @@ type RecentRecommendationTable struct {
 	Unknown     uint8
 }
 
-type TitleRecommendation struct {
-	NumberOfRecommendations int
-	AllRecommendations      [8]constants.AgeRecommendationData
-	MaleRecommendations     [8]constants.AgeRecommendationData
-	FemaleRecommendations   [8]constants.AgeRecommendationData
-}
-
 const QueryRecommendations = `SELECT COUNT(*), game_id AS game_count FROM recommendations GROUP BY game_id`
 
 // BaseRecommendationColumnQuery is a query that allows for getting the amount of votes for any table.
@@ -62,7 +55,10 @@ func PopulateRecommendations() {
 		err = rows.Scan(&count, &gameID)
 		common.CheckError(err)
 
-		recommendations[gameID] = TitleRecommendation{
+		if gameID == "RMCE" {
+			fmt.Println("")
+		}
+		recommendations[gameID] = common.TitleRecommendation{
 			NumberOfRecommendations: count,
 			AllRecommendations:      constants.AgeRecommendationTable,
 			MaleRecommendations:     constants.AgeRecommendationTable,
@@ -83,6 +79,13 @@ func PopulateRecommendations() {
 			err = pool.QueryRow(ctx, BaseRecommendationColumnQueryNoGender("appeal"), 1, gameID, rec.LowerAge, rec.UpperAge).Scan(&gamers)
 			if err != nil {
 				panic(err)
+			}
+
+			if gamers+everyone != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.AllRecommendations[i].EveryonePercent = uint8((float64(everyone) / float64(everyone+gamers)) * 100)
+					recommendations[gameID] = entry
+				}
 			}
 
 			if everyone < gamers {
@@ -112,6 +115,13 @@ func PopulateRecommendations() {
 				panic(err)
 			}
 
+			if casual+hardcore != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.AllRecommendations[i].CasualPercent = uint8((float64(casual) / float64(casual+hardcore)) * 100)
+					recommendations[gameID] = entry
+				}
+			}
+
 			if casual < hardcore {
 				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
@@ -137,6 +147,13 @@ func PopulateRecommendations() {
 			err = pool.QueryRow(ctx, BaseRecommendationColumnQueryNoGender("friend_or_alone"), 1, gameID, rec.LowerAge, rec.UpperAge).Scan(&friend)
 			if err != nil {
 				panic(err)
+			}
+
+			if alone+friend != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.AllRecommendations[i].AlonePercent = uint8((float64(alone) / float64(alone+friend)) * 100)
+					recommendations[gameID] = entry
+				}
 			}
 
 			if alone < friend {
@@ -169,6 +186,13 @@ func PopulateRecommendations() {
 				panic(err)
 			}
 
+			if gamers+everyone != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.MaleRecommendations[i].EveryonePercent = uint8((float64(everyone) / float64(everyone+gamers)) * 100)
+					recommendations[gameID] = entry
+				}
+			}
+
 			if everyone < gamers {
 				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
@@ -196,6 +220,13 @@ func PopulateRecommendations() {
 				panic(err)
 			}
 
+			if casual+hardcore != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.MaleRecommendations[i].CasualPercent = uint8((float64(casual) / float64(casual+hardcore)) * 100)
+					recommendations[gameID] = entry
+				}
+			}
+
 			if casual < hardcore {
 				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
@@ -221,6 +252,13 @@ func PopulateRecommendations() {
 			err = pool.QueryRow(ctx, BaseRecommendationColumnQuery("friend_or_alone"), 1, gameID, 1, rec.LowerAge, rec.UpperAge).Scan(&friend)
 			if err != nil {
 				panic(err)
+			}
+
+			if alone+friend != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.MaleRecommendations[i].AlonePercent = uint8((float64(alone) / float64(alone+friend)) * 100)
+					recommendations[gameID] = entry
+				}
 			}
 
 			if alone < friend {
@@ -253,6 +291,13 @@ func PopulateRecommendations() {
 				panic(err)
 			}
 
+			if gamers+everyone != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.FemaleRecommendations[i].EveryonePercent = uint8((float64(everyone) / float64(everyone+gamers)) * 100)
+					recommendations[gameID] = entry
+				}
+			}
+
 			if everyone < gamers {
 				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
@@ -280,6 +325,13 @@ func PopulateRecommendations() {
 				panic(err)
 			}
 
+			if casual+hardcore != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.FemaleRecommendations[i].CasualPercent = uint8((float64(casual) / float64(casual+hardcore)) * 100)
+					recommendations[gameID] = entry
+				}
+			}
+
 			if casual < hardcore {
 				if entry, ok := recommendations[gameID]; ok {
 					// Go does not allow for changing values inside a map.
@@ -305,6 +357,13 @@ func PopulateRecommendations() {
 			err = pool.QueryRow(ctx, BaseRecommendationColumnQuery("friend_or_alone"), 1, gameID, 2, rec.LowerAge, rec.UpperAge).Scan(&friend)
 			if err != nil {
 				panic(err)
+			}
+
+			if alone+friend != 0 {
+				if entry, ok := recommendations[gameID]; ok {
+					entry.FemaleRecommendations[i].AlonePercent = uint8((float64(alone) / float64(alone+friend)) * 100)
+					recommendations[gameID] = entry
+				}
 			}
 
 			if alone < friend {

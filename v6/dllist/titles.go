@@ -284,7 +284,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			i := info.Info{}
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
-			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType)
+			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType, recommendations)
 		}
 	}
 }
