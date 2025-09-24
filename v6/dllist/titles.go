@@ -457,49 +457,49 @@ func (t *TitleTable) PopulateCriteria(l *List, gameId string) {
 	// Next is male.
 	for i := 0; i < 4; i++ {
 		// If it is none, then the bit will be set to nothing.
-		if recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+		if recommendations[gameId].MaleRecommendations[i].IsGamers == constants.True {
 			t.GamersMaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+		} else if recommendations[gameId].MaleRecommendations[i].IsGamers == constants.False {
 			t.GamersMaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 4; i < 8; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+		if recommendations[gameId].MaleRecommendations[i].IsGamers == constants.True {
 			t.GamersMaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+		} else if recommendations[gameId].MaleRecommendations[i].IsGamers == constants.False {
 			t.GamersMaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 0; i < 4; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+		if recommendations[gameId].MaleRecommendations[i].IsHardcore == constants.True {
 			t.HardcoreMaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+		} else if recommendations[gameId].MaleRecommendations[i].IsHardcore == constants.False {
 			t.HardcoreMaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 4; i < 8; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+		if recommendations[gameId].MaleRecommendations[i].IsHardcore == constants.True {
 			t.HardcoreMaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+		} else if recommendations[gameId].MaleRecommendations[i].IsHardcore == constants.False {
 			t.HardcoreMaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 0; i < 4; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+		if recommendations[gameId].MaleRecommendations[i].IsWithFriends == constants.True {
 			t.WithFriendsMaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+		} else if recommendations[gameId].MaleRecommendations[i].IsWithFriends == constants.False {
 			t.WithFriendsMaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 4; i < 8; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+		if recommendations[gameId].MaleRecommendations[i].IsWithFriends == constants.True {
 			t.WithFriendsMaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+		} else if recommendations[gameId].MaleRecommendations[i].IsWithFriends == constants.False {
 			t.WithFriendsMaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
@@ -507,49 +507,49 @@ func (t *TitleTable) PopulateCriteria(l *List, gameId string) {
 	// Finally is female
 	for i := 0; i < 4; i++ {
 		// If it is none, then the bit will be set to nothing.
-		if recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+		if recommendations[gameId].FemaleRecommendations[i].IsGamers == constants.True {
 			t.GamersFemaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+		} else if recommendations[gameId].FemaleRecommendations[i].IsGamers == constants.False {
 			t.GamersFemaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 4; i < 8; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsGamers == constants.True {
+		if recommendations[gameId].FemaleRecommendations[i].IsGamers == constants.True {
 			t.GamersFemaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsGamers == constants.False {
+		} else if recommendations[gameId].FemaleRecommendations[i].IsGamers == constants.False {
 			t.GamersFemaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 0; i < 4; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+		if recommendations[gameId].FemaleRecommendations[i].IsHardcore == constants.True {
 			t.HardcoreFemaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+		} else if recommendations[gameId].FemaleRecommendations[i].IsHardcore == constants.False {
 			t.HardcoreFemaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 4; i < 8; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.True {
+		if recommendations[gameId].FemaleRecommendations[i].IsHardcore == constants.True {
 			t.HardcoreFemaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsHardcore == constants.False {
+		} else if recommendations[gameId].FemaleRecommendations[i].IsHardcore == constants.False {
 			t.HardcoreFemaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 0; i < 4; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+		if recommendations[gameId].FemaleRecommendations[i].IsWithFriends == constants.True {
 			t.WithFriendsFemaleFirstRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+		} else if recommendations[gameId].FemaleRecommendations[i].IsWithFriends == constants.False {
 			t.WithFriendsFemaleFirstRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
 
 	for i := 4; i < 8; i++ {
-		if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.True {
+		if recommendations[gameId].FemaleRecommendations[i].IsWithFriends == constants.True {
 			t.WithFriendsFemaleSecondRow |= uint8(int(math.Pow(2, float64(i))) << i)
-		} else if recommendations[gameId].AllRecommendations[i].IsWithFriends == constants.False {
+		} else if recommendations[gameId].FemaleRecommendations[i].IsWithFriends == constants.False {
 			t.WithFriendsFemaleSecondRow |= uint8(int(math.Pow(2, float64(i+1))) << i)
 		}
 	}
