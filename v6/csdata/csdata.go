@@ -27,6 +27,7 @@ type DBBanner struct {
 	Spanish  string
 	Italian  string
 	Dutch    string
+	Order    int
 }
 
 type Header struct {
@@ -91,14 +92,14 @@ func CreateCSData() {
 	// Ensure this Postgresql connection is valid.
 	defer pool.Close()
 
-	rows, err := pool.Query(ctx, `SELECT * FROM banners`)
+	rows, err := pool.Query(ctx, `SELECT * FROM banners ORDER BY count ASC`)
 	common.CheckError(err)
 
 	var dbBanners []DBBanner
 	for rows.Next() {
 		var dbBanner DBBanner
 		err = rows.Scan(&dbBanner.ID, &dbBanner.Japanese, &dbBanner.English, &dbBanner.German, &dbBanner.French,
-			&dbBanner.Spanish, &dbBanner.Italian, &dbBanner.Dutch)
+			&dbBanner.Spanish, &dbBanner.Italian, &dbBanner.Dutch, &dbBanner.Order)
 		common.CheckError(err)
 
 		dbBanners = append(dbBanners, dbBanner)
