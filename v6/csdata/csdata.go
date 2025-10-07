@@ -92,7 +92,7 @@ func CreateCSData() {
 	// Ensure this Postgresql connection is valid.
 	defer pool.Close()
 
-	rows, err := pool.Query(ctx, `SELECT * FROM banners ORDER BY order ASC`)
+	rows, err := pool.Query(ctx, `SELECT * FROM banners ORDER BY 'order' ASC`)
 	common.CheckError(err)
 
 	var dbBanners []DBBanner
