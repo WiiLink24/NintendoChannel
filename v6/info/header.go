@@ -86,4 +86,19 @@ func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint3
 		Unknown5:                            [3]byte{4, 1, 0},
 		NumberOfPlayers:                     numberOfPlayers,
 	}
+	switch titleType {
+	case 11,
+		constants.NES,
+		constants.SNES,
+		constants.Nintendo64,
+		constants.TurboGrafx16,
+		constants.Genesis,
+		constants.NeoGeo,
+		constants.MasterSystem,
+		constants.Commodore64,
+		constants.VirtualConsoleArcade:
+		i.Header.IsOnWiiShop = 1
+	default:
+		i.Header.IsOnWiiShop = 0
+	}
 }
