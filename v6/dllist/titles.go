@@ -7,11 +7,12 @@ import (
 	"NintendoChannel/v6/info"
 	"encoding/binary"
 	"encoding/hex"
-	"github.com/mitchellh/go-wordwrap"
 	"math"
 	"strconv"
 	"strings"
 	"unicode/utf16"
+
+	"github.com/mitchellh/go-wordwrap"
 )
 
 // CompanyTable represents a company in the dllist.bin

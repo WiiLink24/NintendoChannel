@@ -60,6 +60,9 @@ type Rating struct {
 
 type Controllers struct {
 	Players    uint8 `xml:"players,attr"`
+	SingleCart uint8 `xml:"players-single-cart,attr"`
+	MultiCart  uint8 `xml:"players-multi-cart,attr"`
+	// Both of these are exclusive to DS
 	Controller []struct {
 		Type string `xml:"type,attr"`
 	} `xml:"control"`

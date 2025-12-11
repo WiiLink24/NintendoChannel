@@ -47,7 +47,7 @@ var timePlayed = map[string]TimePlayed{}
 func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, recommendations map[string]common.TitleRecommendation) {
 	// Make other fields
 	i.GetSupportedControllers(&game.Controllers)
-	i.GetSupportedFeatures(&game.Features, game.ID)
+	i.GetSupportedFeatures(&game.Features, game.ID, &game.Controllers) // For DS local play
 	i.GetSupportedLanguages(game.Languages)
 
 	// Make title clean
