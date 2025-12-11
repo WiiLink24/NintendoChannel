@@ -6,6 +6,7 @@ import (
 	"NintendoChannel/gametdb"
 	"NintendoChannel/v6/info"
 	"encoding/hex"
+	"hash/crc32"
 	"math"
 	"strconv"
 	"strings"
