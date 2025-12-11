@@ -5,7 +5,6 @@ import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"NintendoChannel/v6/info"
-	"encoding/binary"
 	"encoding/hex"
 	"math"
 	"strconv"
@@ -143,6 +142,10 @@ func (l *List) MakeTitleTable() {
 }
 
 func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType constants.TitleType) {
+	// Internally only created once, but it doesn't hurt to have it on the stack.
+	// Required for generating a unique checksum for title ids.
+	crcTable := crc32.MakeTable(crc32.IEEE)
+
 	for _, game := range *games {
 		if game.Locale == nil {
 			// Game doesn't exist for this region?
@@ -180,7 +183,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			copy(titleID[:], game.ID)
 
 			// Wii, DS and 3DS games may share the same IDs are one another. XOR to avoid conflict.
-			id := binary.BigEndian.Uint32(titleID[:])
+			id := crc32.Checksum([]byte(game.ID), crcTable)
 			if defaultTitleType == constants.NintendoDS {
 				id ^= 0x22222222
 			} else if defaultTitleType == constants.NintendoThreeDS {
