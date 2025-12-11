@@ -87,7 +87,7 @@ func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint3
 		NumberOfPlayers:                     numberOfPlayers,
 	}
 	switch titleType {
-	case 11,
+	case constants.WiiWare_,
 		constants.NES,
 		constants.SNES,
 		constants.Nintendo64,
@@ -109,6 +109,5 @@ func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint3
 		i.Header.IsPurchasable = 1
 	default:
 		i.Header.IsPurchasable = 0
-
 	}
 }

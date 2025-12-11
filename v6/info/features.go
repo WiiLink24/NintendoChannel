@@ -2,6 +2,7 @@ package info
 
 import (
 	"NintendoChannel/gametdb"
+	"slices"
 	"strings"
 )
 
@@ -34,22 +35,14 @@ func (i *Info) GetSupportedFeatures(features *gametdb.Features, gameID string, c
 		}
 	}
 
-	if controllers.MultiCart >= 2 && controllers.MultiCart <= 8 {
+	if controllers.MultiCart > 1 {
 		i.SupportedFeatures.WirelessPlay = 1
 	}
-	if controllers.SingleCart >= 1 && controllers.SingleCart <= 8 {
+	if controllers.SingleCart > 1 {
 		i.SupportedFeatures.DownloadPlay = 1
 	}
 
-	prefix := ""
-	if len(gameID) >= 3 {
-		prefix = gameID[:3]
-	}
-
-	for _, id := range touchGenIDs {
-		if prefix == id {
-			i.SupportedFeatures.TouchGenerationsTitle = 1
-			break
-		}
+	if slices.Contains(touchGenIDs, gameID[:3]) {
+		i.SupportedFeatures.TouchGenerationsTitle = 1
 	}
 }

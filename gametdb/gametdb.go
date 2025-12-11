@@ -69,9 +69,8 @@ type Controllers struct {
 }
 
 type Features struct {
-	OnlinePlayers         uint8    `xml:"players,attr"`
-	Feature               []string `xml:"feature"`
-	TouchGenerationsTitle uint8    `xml:"id,attr"`
+	OnlinePlayers uint8    `xml:"players,attr"`
+	Feature       []string `xml:"feature"`
 }
 
 var (
