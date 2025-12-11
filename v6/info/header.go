@@ -101,4 +101,14 @@ func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint3
 	default:
 		i.Header.IsOnWiiShop = 0
 	}
+	switch titleType {
+	case constants.Wii,
+		constants.NintendoDS,
+		constants.NintendoDSi,
+		constants.NintendoThreeDS:
+		i.Header.IsPurchasable = 1
+	default:
+		i.Header.IsPurchasable = 0
+
+	}
 }
