@@ -44,6 +44,12 @@ type Info struct {
 
 var timePlayed = map[string]TimePlayed{}
 
+func (i *Info) GetGameInformation(game *gametdb.Game) {
+	i.GetSupportedControllers(&game.Controllers)
+	i.GetSupportedFeatures(&game.Features, game.ID, &game.Controllers)
+	i.GetSupportedLanguages(game.Languages)
+}
+
 func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, recommendations map[string]common.TitleRecommendation) {
 	i.GetGameInformation(game)
 
@@ -135,10 +141,6 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 
 	err = os.WriteFile(fmt.Sprintf("%s/infos/%d/%d/%d.info", config.AssetsPath, region, language, fileID), temp.Bytes(), 0666)
 	common.CheckError(err)
-}
-
-func (i *Info) GetGameInformation(game *gametdb.Game) {
-	panic("unimplemented")
 }
 
 func (i *Info) WriteAll(buffer, imageBuffer *bytes.Buffer) {
