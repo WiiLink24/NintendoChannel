@@ -8,12 +8,13 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/mitchellh/go-wordwrap"
 	"hash/crc32"
 	"os"
 	"strings"
 	"unicode/utf16"
+
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/mitchellh/go-wordwrap"
 )
 
 type Info struct {
@@ -44,9 +45,8 @@ type Info struct {
 var timePlayed = map[string]TimePlayed{}
 
 func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, recommendations map[string]common.TitleRecommendation) {
-	// Make other fields
 	i.GetSupportedControllers(&game.Controllers)
-	i.GetSupportedFeatures(&game.Features)
+	i.GetSupportedFeatures(game)
 	i.GetSupportedLanguages(game.Languages)
 
 	// Make title clean
