@@ -17,7 +17,7 @@ type SupportedFeatures struct {
 	TouchGenerationsTitle  uint8
 }
 
-func (i *Info) GetSupportedFeatures(features *gametdb.Features, gameID string, controllers *gametdb.Controllers) {
+func (i *Info) GetSupportedFeatures(game *gametdb.Game) {
 	touchGenIDs := []string{
 		"YBN", "VAA", "AYA", "AND", "ANM", "ATD", "CVN",
 		"YCU", "ATI", "AOS", "AG3", "AWI", "APL", "AJQ", "CM7",
@@ -26,7 +26,7 @@ func (i *Info) GetSupportedFeatures(features *gametdb.Features, gameID string, c
 		"RFN", "RFP", "R64", "RYW",
 	}
 
-	for _, s := range features.Feature {
+	for _, s := range game.Features.Feature {
 		if strings.Contains(s, "online") {
 			i.SupportedFeatures.Online = 1
 			i.SupportedFeatures.NintendoWifiConnection = 1
@@ -35,14 +35,14 @@ func (i *Info) GetSupportedFeatures(features *gametdb.Features, gameID string, c
 		}
 	}
 
-	if controllers.MultiCart > 1 {
+	if game.Controllers.MultiCart > 1 {
 		i.SupportedFeatures.WirelessPlay = 1
 	}
-	if controllers.SingleCart > 1 {
+	if game.Controllers.SingleCart > 1 {
 		i.SupportedFeatures.DownloadPlay = 1
 	}
 
-	if slices.Contains(touchGenIDs, gameID[:3]) {
+	if slices.Contains(touchGenIDs, game.ID[:3]) {
 		i.SupportedFeatures.TouchGenerationsTitle = 1
 	}
 }
