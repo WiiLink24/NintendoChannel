@@ -1,6 +1,7 @@
 package info
 
 import (
+	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"slices"
 	"strings"
@@ -18,13 +19,6 @@ type SupportedFeatures struct {
 }
 
 func (i *Info) GetSupportedFeatures(game *gametdb.Game) {
-	touchGenIDs := []string{
-		"YBN", "VAA", "AYA", "AND", "ANM", "ATD", "CVN",
-		"YCU", "ATI", "AOS", "AG3", "AWI", "APL", "AJQ", "CM7",
-		"AD5", "AD2", "ADG", "AD7", "AD3", "IMW", "C6P", "AXP",
-		"A8N", "AZI", "ASQ", "ATR", "AGF",
-		"RFN", "RFP", "R64", "RYW",
-	}
 
 	for _, s := range game.Features.Feature {
 		if strings.Contains(s, "online") {
@@ -42,7 +36,7 @@ func (i *Info) GetSupportedFeatures(game *gametdb.Game) {
 		i.SupportedFeatures.DownloadPlay = 1
 	}
 
-	if slices.Contains(touchGenIDs, game.ID[:3]) {
+	if slices.Contains(constants.TouchGenIDs, game.ID[:3]) {
 		i.SupportedFeatures.TouchGenerationsTitle = 1
 	}
 }

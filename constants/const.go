@@ -174,6 +174,14 @@ var TitleTypesData = []TitleTypeData{
 	{TypeID: 20, ConsoleModel: CTR, ConsoleName: "GAME BOY", GroupID: ThreeDSGameBoy},
 }
 
+var TouchGenIDs = []string{
+	"YBN", "VAA", "AYA", "AND", "ANM", "ATD", "CVN",
+	"YCU", "ATI", "AOS", "AG3", "AWI", "APL", "AJQ", "CM7",
+	"AD5", "AD2", "ADG", "AD7", "AD3", "IMW", "C6P", "AXP",
+	"A8N", "AZI", "ASQ", "ATR", "AGF",
+	"RFN", "RFP", "R64", "RYW",
+}
+
 // TitleType is the classified type of title according to GameTDB
 type TitleType uint8
 
