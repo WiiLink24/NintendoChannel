@@ -110,4 +110,20 @@ func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint3
 	default:
 		i.Header.IsPurchasable = 0
 	}
+	switch titleType { // Can't guarantee the amount of shop points for anything but Virtual Console
+	case constants.NES:
+		i.Header.ShopPoints = 0x1F4
+	case constants.SNES:
+		i.Header.ShopPoints = 0x320
+	case constants.Nintendo64:
+		i.Header.ShopPoints = 0x3E8
+	case constants.Genesis:
+		i.Header.ShopPoints = 0x320
+	case constants.NeoGeo:
+		i.Header.ShopPoints = 0x384
+	case constants.MasterSystem:
+		i.Header.ShopPoints = 0x1F4
+	default:
+		i.Header.ShopPoints = 0xFFFFFFFF
+	} //TODO: implement the rest of the shop points for different regions (imports may be 100 or more points than usa) and publishers cuz inconsistency
 }
