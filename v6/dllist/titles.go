@@ -175,8 +175,10 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				}
 			}
 
-			// We will not include mods or Gamecube games
-			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" || titleType == constants.ThreeDSDownload {
+			// We will not include mods, GameCube games, demos, DS Download Stations, or Pokemon distributions
+			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" || titleType == constants.ThreeDSDownload ||
+				strings.Contains(title, "(Demo)") || strings.Contains(title, "Download") ||
+				strings.Contains(title, "Distribution") || strings.Contains(title, "DSi XL") {
 				continue
 			}
 
