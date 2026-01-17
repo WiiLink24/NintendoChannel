@@ -181,6 +181,9 @@ var TouchGenIDs = []string{
 	"A8N", "AZI", "ASQ", "ATR", "AGF",
 	"RFN", "RFP", "R64", "RYW",
 }
+var DevAppIDs = []string{
+	"007E", "091E", "410E", "413E", "5NEA", "RAAE",
+}
 
 // TitleType is the classified type of title according to GameTDB
 type TitleType uint8
