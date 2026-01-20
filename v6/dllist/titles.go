@@ -184,7 +184,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				strings.Contains(title, "GameStop") || strings.Contains(title, "Target") ||
 				strings.Contains(title, "Best Buy") || strings.Contains(title, "Walmart") ||
 				strings.Contains(title, "Limited Edition") || strings.Contains(title, "Collector's Edition") ||
-				slices.Contains(constants.DevAppIDs, game.ID[:4]) {
+				strings.Contains(title, "(Beta)") || slices.Contains(constants.DevAppIDs, game.ID[:4]) {
 				continue
 			}
 
