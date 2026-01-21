@@ -1,6 +1,7 @@
 package info
 
 import (
+	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"unicode/utf16"
 )
@@ -48,5 +49,13 @@ func (i *Info) GetSupportedControllers(controllers *gametdb.Controllers) {
 			}
 			break
 		}
+	}
+	// The WiiTDB XML labels the "wiimote" as a required accessory, therefore, this confuses the generator into mislabeling
+	// certain VC titles as supporting a Wii Remote when they do not.
+	switch i.Header.TitleType {
+	case constants.SNES,
+		constants.Nintendo64,
+		constants.Genesis:
+		i.SupportedControllers.WiiRemote = 0
 	}
 }
