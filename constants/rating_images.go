@@ -6,19 +6,19 @@ var (
 	//go:embed nc.bin
 	DLList []byte
 
-	//go:embed ratings/esrb/EC.jpg
+	//go:embed ratings/esrb/EC-small.jpg
 	ECImage []byte
 
-	//go:embed ratings/esrb/E.jpg
+	//go:embed ratings/esrb/E-small.jpg
 	EImage []byte
 
-	//go:embed ratings/esrb/E10.jpg
+	//go:embed ratings/esrb/E10-small.jpg
 	E10Image []byte
 
-	//go:embed ratings/esrb/T.jpg
+	//go:embed ratings/esrb/T-small.jpg
 	TImage []byte
 
-	//go:embed ratings/esrb/M.jpg
+	//go:embed ratings/esrb/M-small.jpg
 	MImage []byte
 
 	//go:embed ratings/pegi/3.jpg
