@@ -95,6 +95,9 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 		common.CheckError(err)
 
 		// Cache image for future generations.
+		dir := fmt.Sprintf("%s/%s/%s", common.GetConfig().ImagesPath, titleTypeToStr[titleType], regionToStr[region])
+		err = os.MkdirAll(dir, os.ModePerm)
+		common.CheckError(err)
 		err = os.WriteFile(path, buffer.Bytes(), 0666)
 		common.CheckError(err)
 	}
