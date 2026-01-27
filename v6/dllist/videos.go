@@ -3,8 +3,11 @@ package dllist
 import (
 	"NintendoChannel/common"
 	"NintendoChannel/constants"
+	"strings"
 	"time"
 	"unicode/utf16"
+
+	"github.com/mitchellh/go-wordwrap"
 )
 
 type VideoTable struct {
@@ -67,6 +70,21 @@ func (l *List) MakeVideoTable() {
 		common.CheckError(err)
 
 		var title [123]uint16
+		if strings.Contains(queriedTitle, "|") {
+			// Explicit manual line break
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 31 {
+			// Auto-wrap ONLY if no marker
+			wrapped := wordwrap.WrapString(queriedTitle, 31)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
 
@@ -114,6 +132,19 @@ func (l *List) MakeNewVideoTable() {
 		common.CheckError(err)
 
 		var title [102]uint16
+		if strings.Contains(queriedTitle, "|") {
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 31 {
+			wrapped := wordwrap.WrapString(queriedTitle, 31)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
 
@@ -150,6 +181,19 @@ func (l *List) MakePopularVideoTable() {
 		common.CheckError(err)
 
 		var title [102]uint16
+		if strings.Contains(queriedTitle, "|") {
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 31 {
+			wrapped := wordwrap.WrapString(queriedTitle, 31)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
 
