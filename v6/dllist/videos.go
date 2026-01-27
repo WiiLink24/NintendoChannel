@@ -42,7 +42,7 @@ type PopularVideosTable struct {
 	ID          uint32
 	VideoLength uint16
 	TitleID     uint32
-	BarColor    uint8
+	VideoType   uint8
 	_           [15]byte
 	RatingID    uint8
 	Unknown     uint8
@@ -173,7 +173,7 @@ func (l *List) MakePopularVideoTable() {
 			ID:          uint32(id),
 			VideoLength: uint16(length),
 			TitleID:     0,
-			BarColor:    0,
+			VideoType:   uint8(videoType),
 			RatingID:    9,
 			Unknown:     1,
 			VideoRank:   1,
