@@ -27,7 +27,8 @@ type NewVideoTable struct {
 	ID          uint32
 	VideoLength uint16
 	TitleID     uint32
-	Unknown     [15]byte
+	VideoType   uint8
+	Unknown     [14]byte
 	Unknown2    uint8
 	RatingID    uint8
 	Unknown3    uint8
@@ -120,7 +121,8 @@ func (l *List) MakeNewVideoTable() {
 			ID:          uint32(id),
 			VideoLength: uint16(length),
 			TitleID:     0,
-			Unknown:     [15]byte{},
+			VideoType:   uint8(videoType),
+			Unknown:     [14]byte{},
 			Unknown2:    0,
 			RatingID:    9,
 			Unknown3:    1,
