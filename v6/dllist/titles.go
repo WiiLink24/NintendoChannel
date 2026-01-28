@@ -244,8 +244,8 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			copy(byteSubtitle[:], tempSubtitle)
 
 			medal := constants.None
-			if num, ok := recommendations[game.ID[:4]]; ok {
-				medal = GetMedal(num.NumberOfRecommendations)
+			if rec, ok := recommendations[game.ID[:4]]; ok {
+				medal = GetMedal(rec)
 			}
 
 			companyOffset, companyID := l.GetCompany(&game)
@@ -397,18 +397,46 @@ func (l *List) MakeNewTitleTable() {
 	l.Header.NumberOfNewTitleTables = 1
 }
 
-func GetMedal(numberOfTimesVotes int) constants.Medal {
-	if numberOfTimesVotes >= 50 {
-		return constants.Platinum
-	} else if numberOfTimesVotes >= 35 {
-		return constants.Gold
-	} else if numberOfTimesVotes >= 20 {
-		return constants.Silver
-	} else if numberOfTimesVotes >= 15 {
-		return constants.Bronze
+func GetMedal(rec common.TitleRecommendation) constants.Medal {
+	total := 0
+	count := 0
+
+	for i := 0; i < 8; i++ {
+		tables := [][3]uint8{
+			{rec.AllRecommendations[i].EveryonePercent, rec.AllRecommendations[i].CasualPercent, rec.AllRecommendations[i].AlonePercent},
+			{rec.MaleRecommendations[i].EveryonePercent, rec.MaleRecommendations[i].CasualPercent, rec.MaleRecommendations[i].AlonePercent},
+			{rec.FemaleRecommendations[i].EveryonePercent, rec.FemaleRecommendations[i].CasualPercent, rec.FemaleRecommendations[i].AlonePercent},
+		}
+
+		for _, table := range tables {
+			if table[0]+table[1]+table[2] == 0 {
+				continue // skip empty brackets
+			}
+			for _, val := range table {
+				total += int(val)
+				count++
+			}
+		}
 	}
 
-	return constants.None
+	if count == 0 {
+		return constants.None
+	}
+
+	avg := total / count
+
+	switch {
+	case avg >= 90:
+		return constants.Platinum
+	case avg >= 80:
+		return constants.Gold
+	case avg >= 70:
+		return constants.Silver
+	case avg >= 60:
+		return constants.Bronze
+	default:
+		return constants.None
+	}
 }
 
 // PopulateCriteria fills the bitfield entries in TitleTable

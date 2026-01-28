@@ -399,12 +399,12 @@ func (l *List) MakeRecommendationTable() {
 func (l *List) MakeRecentRecommendationTable() {
 	l.Header.RecentRecommendationTableOffset = l.GetCurrentSize()
 
-	for gameID, num := range recommendations {
+	for gameID, rec := range recommendations {
 		for i, title := range l.TitleTable {
 			if string(title.TitleID[:]) == gameID {
 				l.RecentRecommendationTable = append(l.RecentRecommendationTable, RecentRecommendationTable{
 					TitleOffset: (236 * uint32(i)) + l.Header.TitleTableOffset,
-					Medal:       GetMedal(num.NumberOfRecommendations),
+					Medal:       GetMedal(rec),
 					Unknown:     222,
 				})
 				break
