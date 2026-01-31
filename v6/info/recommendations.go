@@ -13,10 +13,15 @@ type RecommendationTable struct {
 	Medals   [3][8]uint8
 }
 
-func (i *Info) MakeRecommendationTable(recommendation common.TitleRecommendation) {
+func (i *Info) MakeRecommendationTable(recommendation common.TitleRecommendation, numberOfTimesVotes int) {
+	var medal constants.Medal
+
+	if numberOfTimesVotes <= 20 { // Don't even bother calculating
+		return
+	}
+
 	for j := 0; j < 3; j++ {
 		for k := 0; k < 8; k++ {
-			var medal constants.Medal
 			if j == 0 {
 				i.RecommendationTable.Everyone[j][k] = recommendation.AllRecommendations[k].EveryonePercent
 				i.RecommendationTable.Casual[j][k] = recommendation.AllRecommendations[k].CasualPercent
@@ -31,7 +36,7 @@ func (i *Info) MakeRecommendationTable(recommendation common.TitleRecommendation
 				i.RecommendationTable.Alone[j][k] = recommendation.FemaleRecommendations[k].AlonePercent
 			}
 
-			avg := (int(i.RecommendationTable.Everyone[j][k])) + (int(i.RecommendationTable.Casual[j][k])) + (int(i.RecommendationTable.Alone[j][k]))/3
+			avg := (int(i.RecommendationTable.Everyone[j][k]) + int(i.RecommendationTable.Casual[j][k]) + int(i.RecommendationTable.Alone[j][k])) / 3
 			switch {
 			case avg >= 90:
 				medal = constants.Platinum

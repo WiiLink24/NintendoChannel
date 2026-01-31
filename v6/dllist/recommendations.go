@@ -404,7 +404,7 @@ func (l *List) MakeRecentRecommendationTable() {
 			if string(title.TitleID[:]) == gameID {
 				l.RecentRecommendationTable = append(l.RecentRecommendationTable, RecentRecommendationTable{
 					TitleOffset: (236 * uint32(i)) + l.Header.TitleTableOffset,
-					Medal:       GetMedal(rec),
+					Medal:       GetMedal(rec, rec.NumberOfRecommendations),
 					Unknown:     222,
 				})
 				break

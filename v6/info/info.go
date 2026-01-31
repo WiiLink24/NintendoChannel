@@ -109,7 +109,7 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 
 	if v, ok := recommendations[game.ID[:4]]; ok {
 		i.Header.RatingTableOffset = 6744 + 16
-		i.MakeRecommendationTable(v)
+		i.MakeRecommendationTable(v, v.NumberOfRecommendations)
 	}
 
 	temp := new(bytes.Buffer)
