@@ -398,36 +398,13 @@ func (l *List) MakeNewTitleTable() {
 }
 
 func GetMedal(rec common.TitleRecommendation, numberOfTimesVotes int) constants.Medal {
-	var total int
-	var count int
+	var avg int
 
 	if numberOfTimesVotes <= 20 { // Not enough votes then don't bother calculating
 		return constants.None
 	}
 
-	for i := 0; i < 8; i++ {
-		tables := [][3]uint8{
-			{rec.AllRecommendations[i].EveryonePercent, rec.AllRecommendations[i].CasualPercent, rec.AllRecommendations[i].AlonePercent},
-			{rec.MaleRecommendations[i].EveryonePercent, rec.MaleRecommendations[i].CasualPercent, rec.MaleRecommendations[i].AlonePercent},
-			{rec.FemaleRecommendations[i].EveryonePercent, rec.FemaleRecommendations[i].CasualPercent, rec.FemaleRecommendations[i].AlonePercent},
-		}
-
-		for _, table := range tables {
-			if table[0]+table[1]+table[2] == 0 {
-				continue // skip empty brackets
-			}
-			for _, val := range table {
-				total += int(val)
-				count++
-			}
-		}
-	}
-
-	if count == 0 {
-		return constants.None
-	}
-
-	avg := total / count
+	avg = (int(rec.AllRecommendations[0].EveryonePercent))
 
 	switch {
 	case avg >= 90:
