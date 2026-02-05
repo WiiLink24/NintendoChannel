@@ -13,6 +13,7 @@ import (
 	"image/png"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -39,6 +40,12 @@ var regionToGameTDB = map[constants.Region]string{
 	constants.Japan: "NTSC-J",
 }
 
+var regionToCodeTDB = map[constants.Region]byte{
+	constants.NTSC:  'E',
+	constants.PAL:   'P',
+	constants.Japan: 'J',
+}
+
 func TestGetAllImages(t *testing.T) {
 	config := common.GetConfig()
 
@@ -53,11 +60,27 @@ func TestGetAllImages(t *testing.T) {
 					titleType = constants.NintendoThreeDS
 				}
 
-				if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" {
+				if len(game.Locale) == 0 {
+					continue
+				}
+
+				title := game.Locale[0].Title
+				if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" ||
+					strings.Contains(title, "(Demo)") || strings.Contains(title, "Download") || strings.Contains(title, "Distribution") || strings.Contains(title, "DSi XL") ||
+					strings.Contains(title, "Exclusive") || strings.Contains(title, "Toys R Us") ||
+					strings.Contains(title, "GameStop") || strings.Contains(title, "Target") ||
+					strings.Contains(title, "Best Buy") || strings.Contains(title, "Walmart") ||
+					strings.Contains(title, "Limited Edition") || strings.Contains(title, "Collector's Edition") ||
+					strings.Contains(title, "(Beta)") || strings.Contains(title, "Relay") {
 					continue
 				}
 
 				if game.Region != regionToGameTDB[region.Region] {
+					continue
+				}
+
+				if game.ID[3] != regionToCodeTDB[region.Region] {
+					fmt.Println("Skipping weird title ", game.ID)
 					continue
 				}
 
@@ -66,6 +89,7 @@ func TestGetAllImages(t *testing.T) {
 					continue
 				}
 
+				fmt.Println("Downloading", game.ID)
 				url := fmt.Sprintf("https://art.gametdb.com/%s/%s/%s/%s.png", titleTypeToStr[titleType], consoleToImageType[titleType], regionToStr[region.Region], game.ID)
 				resp, err := http.Get(url)
 				if err != nil {
@@ -73,6 +97,7 @@ func TestGetAllImages(t *testing.T) {
 				}
 
 				if resp.StatusCode != http.StatusOK {
+					fmt.Println(fmt.Sprintf("GameTDB Error: %d", resp.StatusCode))
 					continue
 				}
 

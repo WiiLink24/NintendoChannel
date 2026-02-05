@@ -101,6 +101,12 @@ var regionToGameTDB = map[constants.Region]string{
 	constants.Japan: "NTSC-J",
 }
 
+var regionToCodeTDB = map[constants.Region]byte{
+	constants.NTSC:  'E',
+	constants.PAL:   'P',
+	constants.Japan: 'J',
+}
+
 var gameTDBRatingToRatingID = map[string]map[string]uint8{
 	"CERO": {
 		"A": 8,
@@ -186,6 +192,10 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				strings.Contains(title, "Limited Edition") || strings.Contains(title, "Collector's Edition") ||
 				strings.Contains(title, "(Beta)") || strings.Contains(title, "Relay") ||
 				slices.Contains(constants.DevAppIDs, game.ID[:4]) {
+				continue
+			}
+
+			if game.ID[3] != regionToCodeTDB[l.region] {
 				continue
 			}
 
