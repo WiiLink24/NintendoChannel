@@ -100,6 +100,12 @@ var regionToGameTDB = map[constants.Region]string{
 	constants.Japan: "NTSC-J",
 }
 
+var regionToCodeTDB = map[constants.Region]byte{
+	constants.NTSC:  'E',
+	constants.PAL:   'P',
+	constants.Japan: 'J',
+}
+
 var gameTDBRatingToRatingID = map[string]map[string]uint8{
 	"CERO": {
 		"A": 8,
@@ -179,6 +185,10 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" || titleType == constants.ThreeDSDownload ||
 				strings.Contains(title, "(Demo)") || strings.Contains(title, "Download") ||
 				strings.Contains(title, "Distribution") || strings.Contains(title, "DSi XL") {
+				continue
+			}
+
+			if game.ID[3] != regionToCodeTDB[l.region] {
 				continue
 			}
 
