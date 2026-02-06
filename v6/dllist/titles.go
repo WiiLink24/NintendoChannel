@@ -255,7 +255,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 
 			medal := constants.None
 			if rec, ok := recommendations[game.ID[:4]]; ok {
-				medal = GetMedal(rec, rec.NumberOfRecommendations)
+				medal = GetMedal(rec)
 			}
 
 			companyOffset, companyID := l.GetCompany(&game)
@@ -407,10 +407,10 @@ func (l *List) MakeNewTitleTable() {
 	l.Header.NumberOfNewTitleTables = 1
 }
 
-func GetMedal(rec common.TitleRecommendation, numberOfTimesVotes int) constants.Medal {
+func GetMedal(rec common.TitleRecommendation) constants.Medal {
 	var avg int
 
-	if numberOfTimesVotes <= 20 { // Not enough votes then don't bother calculating
+	if rec.NumberOfRecommendations <= 20 { // Not enough votes then don't bother calculating
 		return constants.None
 	}
 
