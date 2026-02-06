@@ -13,10 +13,10 @@ type RecommendationTable struct {
 	Medals   [3][8]uint8
 }
 
-func (i *Info) MakeRecommendationTable(recommendation common.TitleRecommendation, numberOfTimesVotes int) {
+func (i *Info) MakeRecommendationTable(recommendation common.TitleRecommendation) {
 	var medal constants.Medal
 
-	if numberOfTimesVotes <= 20 { // Don't even bother calculating
+	if recommendation.NumberOfRecommendations <= 20 { // Don't even bother calculating
 		return
 	}
 
