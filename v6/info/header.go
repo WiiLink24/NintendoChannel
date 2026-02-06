@@ -46,7 +46,7 @@ type Header struct {
 	NumberOfPlayers                     uint8
 }
 
-func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint32, titleType constants.TitleType, releaseYear uint16, releaseMonth, releaseDay uint8) {
+func (i *Info) MakeHeader(softwareID uint32, gameID [4]byte, numberOfPlayers uint8, companyID uint32, titleType constants.TitleType, releaseYear uint16, releaseMonth, releaseDay uint8) {
 	i.Header = Header{
 		Version:                             6,
 		Unknown:                             2,
@@ -70,7 +70,7 @@ func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint3
 		RatingPictureOffset:                 0,
 		RatingPictureSize:                   0,
 		DetailedRatingPictureTable:          [7]DetailedRatingPictureTable{},
-		SoftwareID:                          0,
+		SoftwareID:                          softwareID,
 		GameID:                              gameID,
 		TitleType:                           titleType,
 		CompanyID:                           companyID,

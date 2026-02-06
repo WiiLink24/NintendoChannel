@@ -26,6 +26,7 @@ func (i *Info) GetSupportedFeatures(game *gametdb.Game) {
 			i.SupportedFeatures.NintendoWifiConnection = 1
 		} else if s == "download" {
 			i.SupportedFeatures.DLC = 1
+			// TODO: figure out a way to distinguish between actual paid DLC and just downloadable stuff
 		}
 	}
 

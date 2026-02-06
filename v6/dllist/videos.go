@@ -3,8 +3,11 @@ package dllist
 import (
 	"NintendoChannel/common"
 	"NintendoChannel/constants"
+	"strings"
 	"time"
 	"unicode/utf16"
+
+	"github.com/mitchellh/go-wordwrap"
 )
 
 type VideoTable struct {
@@ -27,7 +30,8 @@ type NewVideoTable struct {
 	ID          uint32
 	VideoLength uint16
 	TitleID     uint32
-	Unknown     [15]byte
+	VideoType   uint8
+	Unknown     [14]byte
 	Unknown2    uint8
 	RatingID    uint8
 	Unknown3    uint8
@@ -38,7 +42,7 @@ type PopularVideosTable struct {
 	ID          uint32
 	VideoLength uint16
 	TitleID     uint32
-	BarColor    uint8
+	VideoType   uint8
 	_           [15]byte
 	RatingID    uint8
 	Unknown     uint8
@@ -66,6 +70,21 @@ func (l *List) MakeVideoTable() {
 		common.CheckError(err)
 
 		var title [123]uint16
+		if strings.Contains(queriedTitle, "|") {
+			// Explicit manual line break
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 31 {
+			// Auto-wrap ONLY if no marker
+			wrapped := wordwrap.WrapString(queriedTitle, 31)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
 
@@ -113,6 +132,19 @@ func (l *List) MakeNewVideoTable() {
 		common.CheckError(err)
 
 		var title [102]uint16
+		if strings.Contains(queriedTitle, "|") {
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 31 {
+			wrapped := wordwrap.WrapString(queriedTitle, 31)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
 
@@ -120,7 +152,8 @@ func (l *List) MakeNewVideoTable() {
 			ID:          uint32(id),
 			VideoLength: uint16(length),
 			TitleID:     0,
-			Unknown:     [15]byte{},
+			VideoType:   uint8(videoType),
+			Unknown:     [14]byte{},
 			Unknown2:    0,
 			RatingID:    9,
 			Unknown3:    1,
@@ -148,6 +181,19 @@ func (l *List) MakePopularVideoTable() {
 		common.CheckError(err)
 
 		var title [102]uint16
+		if strings.Contains(queriedTitle, "|") {
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 31 {
+			wrapped := wordwrap.WrapString(queriedTitle, 31)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
 
@@ -155,7 +201,7 @@ func (l *List) MakePopularVideoTable() {
 			ID:          uint32(id),
 			VideoLength: uint16(length),
 			TitleID:     0,
-			BarColor:    0,
+			VideoType:   uint8(videoType),
 			RatingID:    9,
 			Unknown:     1,
 			VideoRank:   1,
