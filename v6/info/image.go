@@ -12,8 +12,12 @@ import (
 	"image/png"
 	"net/http"
 	"os"
+	"strings"
 
 	"golang.org/x/image/draw"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
+	"golang.org/x/image/math/fixed"
 )
 
 var regionToStr = map[constants.Region]string{
@@ -122,4 +126,109 @@ func resize(origImage image.Image, x, y int) image.Image {
 	newImage := image.NewRGBA(image.Rect(0, 0, x, y))
 	draw.BiLinear.Scale(newImage, newImage.Bounds(), origImage, origImage.Bounds(), draw.Over, nil)
 	return newImage
+}
+
+func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.Region, DetailedRatingPictureTable [7]string, fileID uint32) {
+	if region == 2 { // NTSC-U, ESRB
+		// Parse the embedded ESRB font (Rodin NTLG)
+		f, err := opentype.Parse(constants.ESRBRatingDescriptorFont)
+		common.CheckError(err)
+
+		// Create font face with appropriate size for ESRB content descriptors
+		face, err := opentype.NewFace(f, &opentype.FaceOptions{
+			Size:    15,
+			DPI:     72,
+			Hinting: font.HintingFull,
+		})
+		common.CheckError(err)
+
+		for j, s := range DetailedRatingPictureTable {
+
+			// Skip empty strings to avoid creating unnecessary images
+			if s == "" {
+				continue
+			}
+
+			// Create 350x16 image with white background
+			img := image.NewRGBA(image.Rect(0, 0, 350, 16))
+			draw.Draw(img, img.Bounds(), &image.Uniform{C: color.White}, image.Point{}, draw.Src)
+
+			// Create the font drawer
+			d := &font.Drawer{
+				Dst:  img,
+				Src:  image.NewUniform(color.Black),
+				Face: face,
+				Dot:  fixed.Point26_6{X: fixed.I(2), Y: fixed.I(13)},
+			}
+
+			// Draw the text
+			words := strings.Fields(s)
+			for i, word := range words {
+				if len(word) > 0 {
+					words[i] = strings.ToUpper(word[:1]) + strings.ToLower(word[1:])
+				}
+			}
+			d.DrawString(strings.Join(words, " "))
+
+			// Encode image
+			var imgBuffer bytes.Buffer
+			err := jpeg.Encode(&imgBuffer, img, &jpeg.Options{Quality: 100})
+			common.CheckError(err)
+
+			// Set picture table entry
+			i.Header.DetailedRatingPictureTable[j].PictureOffset = i.GetCurrentSize(buffer)
+			buffer.Write(imgBuffer.Bytes())
+			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(imgBuffer.Len())
+
+		}
+	} else if region == 1 { // PAL, PEGI
+
+		for j, s := range DetailedRatingPictureTable {
+			// Skip empty strings
+			if s == "" {
+				continue
+			}
+
+			// Find matching descriptor image
+			var descriptorImage []byte
+			if img, exists := constants.PEGIDescriptors[s]; exists {
+				descriptorImage = img
+			}
+
+			// Skip if no matching descriptor found
+			if descriptorImage == nil {
+				continue
+			}
+
+			// Set picture table entry
+			i.Header.DetailedRatingPictureTable[j].PictureOffset = i.GetCurrentSize(buffer)
+			buffer.Write(descriptorImage)
+			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(len(descriptorImage))
+
+		}
+	} else if region == 0 { // NTSC-J, CERO
+
+		for j, s := range DetailedRatingPictureTable {
+			// Skip empty strings
+			if s == "" {
+				continue
+			}
+
+			// Find matching descriptor image
+			var descriptorImage []byte
+			if img, exists := constants.CERODescriptors[s]; exists {
+				descriptorImage = img
+			}
+
+			// Skip if no matching descriptor found
+			if descriptorImage == nil {
+				continue
+			}
+
+			// Set picture table entry
+			i.Header.DetailedRatingPictureTable[j].PictureOffset = i.GetCurrentSize(buffer)
+			buffer.Write(descriptorImage)
+			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(len(descriptorImage))
+		}
+	}
 }

@@ -44,7 +44,7 @@ type Info struct {
 
 var timePlayed = map[string]TimePlayed{}
 
-func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, recommendations map[string]common.TitleRecommendation) {
+func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, ratingDescriptors [7]string, recommendations map[string]common.TitleRecommendation) {
 	i.GetSupportedControllers(&game.Controllers)
 	i.GetSupportedFeatures(game)
 	i.GetSupportedLanguages(game.Languages)
@@ -119,6 +119,7 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	i.Header.PictureOffset = i.GetCurrentSize(imageBuffer)
 	i.WriteCoverArt(imageBuffer, titleType, region, game.ID)
 	i.WriteRatingImage(imageBuffer, region)
+	i.WriteDetailedRatingImage(imageBuffer, region, ratingDescriptors, fileID)
 	i.Header.Filesize = i.GetCurrentSize(imageBuffer)
 	temp.Reset()
 
