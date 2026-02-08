@@ -58,5 +58,7 @@ func (i *Info) GetSupportedControllers(controllers *gametdb.Controllers) {
 		constants.Genesis:
 		i.SupportedControllers.WiiRemote = 0
 		i.SupportedControllers.Nunchuk = 0
+	case constants.NES:
+		i.SupportedControllers.Nunchuk = 0
 	}
 }
