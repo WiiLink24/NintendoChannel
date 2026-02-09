@@ -125,7 +125,7 @@ func resize(origImage image.Image, x, y int) image.Image {
 	return newImage
 }
 
-func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.Region, DetailedRatingPictureTable [7]string, fileID uint32) {
+func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.Region, DetailedRatingPictureTable [7]string) {
 	if region == 2 { // NTSC-U, ESRB
 		// Parse the embedded ESRB font (Rodin NTLG)
 		f, err := opentype.Parse(constants.ESRBRatingDescriptorFont)
@@ -178,7 +178,7 @@ func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.R
 			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(imgBuffer.Len())
 
 		}
-	} else if region == 1 { // PAL, PEGI
+	} else if region == 1 || region == 0 { // PAL (PEGI) and NTSC-J (CERO)
 
 		for j, s := range DetailedRatingPictureTable {
 			// Skip empty strings
@@ -188,12 +188,15 @@ func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.R
 
 			// Find matching descriptor image
 			var descriptorImage []byte
-			if img, exists := constants.PEGIDescriptors[s]; exists {
-				descriptorImage = img
+			var exists bool
+			if region == 1 {
+				descriptorImage, exists = constants.PEGIDescriptors[s]
+			} else {
+				descriptorImage, exists = constants.CERODescriptors[s]
 			}
 
 			// Skip if no matching descriptor found
-			if descriptorImage == nil {
+			if !exists {
 				continue
 			}
 
@@ -202,30 +205,6 @@ func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.R
 			buffer.Write(descriptorImage)
 			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(len(descriptorImage))
 
-		}
-	} else if region == 0 { // NTSC-J, CERO
-
-		for j, s := range DetailedRatingPictureTable {
-			// Skip empty strings
-			if s == "" {
-				continue
-			}
-
-			// Find matching descriptor image
-			var descriptorImage []byte
-			if img, exists := constants.CERODescriptors[s]; exists {
-				descriptorImage = img
-			}
-
-			// Skip if no matching descriptor found
-			if descriptorImage == nil {
-				continue
-			}
-
-			// Set picture table entry
-			i.Header.DetailedRatingPictureTable[j].PictureOffset = i.GetCurrentSize(buffer)
-			buffer.Write(descriptorImage)
-			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(len(descriptorImage))
 		}
 	}
 }
