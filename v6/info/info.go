@@ -119,7 +119,7 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	i.Header.PictureOffset = i.GetCurrentSize(imageBuffer)
 	i.WriteCoverArt(imageBuffer, titleType, region, game.ID)
 	i.WriteRatingImage(imageBuffer, region)
-	i.WriteDetailedRatingImage(imageBuffer, region, ratingDescriptors, fileID)
+	i.WriteDetailedRatingImage(imageBuffer, region, ratingDescriptors)
 	i.Header.Filesize = i.GetCurrentSize(imageBuffer)
 	temp.Reset()
 
