@@ -70,9 +70,21 @@ func (l *List) MakeVideoTable() {
 		common.CheckError(err)
 
 		var title [123]uint16
+		if strings.Contains(queriedTitle, "|") {
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 51 {
+			wrapped := wordwrap.WrapString(queriedTitle, 51)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
-
 		// A new video is one that is less than 5 days old
 		fiveDaysAfterAdded := dateAdded.AddDate(0, 0, 5)
 		isNew := 0
@@ -120,8 +132,8 @@ func (l *List) MakeNewVideoTable() {
 		if strings.Contains(queriedTitle, "|") {
 			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
 
-		} else if len(queriedTitle) > 31 {
-			wrapped := wordwrap.WrapString(queriedTitle, 31)
+		} else if len(queriedTitle) > 51 {
+			wrapped := wordwrap.WrapString(queriedTitle, 51)
 			lines := strings.Split(wrapped, "\n")
 			if len(lines) >= 2 {
 				queriedTitle = lines[0] + "\n" + lines[1]
@@ -166,9 +178,21 @@ func (l *List) MakePopularVideoTable() {
 		common.CheckError(err)
 
 		var title [102]uint16
+		if strings.Contains(queriedTitle, "|") {
+			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
+
+		} else if len(queriedTitle) > 51 {
+			wrapped := wordwrap.WrapString(queriedTitle, 51)
+			lines := strings.Split(wrapped, "\n")
+			if len(lines) >= 2 {
+				queriedTitle = lines[0] + "\n" + lines[1]
+			} else {
+				queriedTitle = lines[0]
+			}
+		}
+
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
-
 		l.PopularVideosTable = append(l.PopularVideosTable, PopularVideosTable{
 			ID:          uint32(id),
 			VideoLength: uint16(length),
