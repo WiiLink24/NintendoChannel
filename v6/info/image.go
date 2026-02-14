@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
@@ -51,6 +52,20 @@ var PlaceholderDS []byte
 
 //go:embed wii.jpg
 var PlaceholderWii []byte
+
+var (
+	esrbFont     *opentype.Font
+	esrbFontOnce sync.Once
+)
+
+func InitESRBFont() *opentype.Font {
+	esrbFontOnce.Do(func() {
+		var err error
+		esrbFont, err = opentype.Parse(constants.ESRBRatingDescriptorFont)
+		common.CheckError(err)
+	})
+	return esrbFont
+}
 
 func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType, region constants.Region, gameID string) {
 	// Check if it exists on disk first.
@@ -125,11 +140,9 @@ func resize(origImage image.Image, x, y int) image.Image {
 	return newImage
 }
 
-func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.Region, DetailedRatingPictureTable [7]string) {
-	if region == 2 { // NTSC-U, ESRB
-		// Parse the embedded ESRB font (Rodin NTLG)
-		f, err := opentype.Parse(constants.ESRBRatingDescriptorFont)
-		common.CheckError(err)
+func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.Region, RatingDescriptors [7]string) {
+	if region == constants.NTSC {
+		f := InitESRBFont()
 
 		// Create font face with appropriate size for ESRB content descriptors
 		face, err := opentype.NewFace(f, &opentype.FaceOptions{
@@ -139,7 +152,7 @@ func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.R
 		})
 		common.CheckError(err)
 
-		for j, s := range DetailedRatingPictureTable {
+		for j, s := range RatingDescriptors {
 
 			// Skip empty strings to avoid creating unnecessary images
 			if s == "" {
@@ -178,9 +191,9 @@ func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.R
 			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(imgBuffer.Len())
 
 		}
-	} else if region == 1 || region == 0 { // PAL (PEGI) and NTSC-J (CERO)
+	} else {
 
-		for j, s := range DetailedRatingPictureTable {
+		for j, s := range RatingDescriptors {
 			// Skip empty strings
 			if s == "" {
 				continue
@@ -188,16 +201,10 @@ func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.R
 
 			// Find matching descriptor image
 			var descriptorImage []byte
-			var exists bool
-			if region == 1 {
-				descriptorImage, exists = constants.PEGIDescriptors[s]
+			if region == constants.PAL {
+				descriptorImage = constants.PEGIDescriptors[s]
 			} else {
-				descriptorImage, exists = constants.CERODescriptors[s]
-			}
-
-			// Skip if no matching descriptor found
-			if !exists {
-				continue
+				descriptorImage = constants.CERODescriptors[s]
 			}
 
 			// Set picture table entry
