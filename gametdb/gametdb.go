@@ -54,8 +54,9 @@ type Date struct {
 }
 
 type Rating struct {
-	Type  string `xml:"type,attr"`
-	Value string `xml:"value,attr"`
+	Type       string   `xml:"type,attr"`
+	Value      string   `xml:"value,attr"`
+	Descriptor []string `xml:"descriptor"`
 }
 
 type Controllers struct {
