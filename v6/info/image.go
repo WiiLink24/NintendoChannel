@@ -92,6 +92,10 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 
 		err = jpeg.Encode(buffer, newImage, nil)
 		common.CheckError(err)
+
+		// Cache image for future generations.
+		err = os.WriteFile(path, buffer.Bytes(), 0666)
+		common.CheckError(err)
 	}
 
 	i.Header.PictureSize = uint32(buffer.Len())

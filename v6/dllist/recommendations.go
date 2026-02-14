@@ -55,9 +55,6 @@ func PopulateRecommendations() {
 		err = rows.Scan(&count, &gameID)
 		common.CheckError(err)
 
-		if gameID == "RMCE" {
-			fmt.Println("")
-		}
 		recommendations[gameID] = common.TitleRecommendation{
 			NumberOfRecommendations: count,
 			AllRecommendations:      constants.AgeRecommendationTable,

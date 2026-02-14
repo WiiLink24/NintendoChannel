@@ -200,7 +200,7 @@ const (
 	Genesis
 	NeoGeo
 	NintendoDS           TitleType = 10
-	_WiiWare             TitleType = 11
+	WiiWare_             TitleType = 11
 	MasterSystem         TitleType = 12
 	Commodore64          TitleType = 13
 	VirtualConsoleArcade TitleType = 14
@@ -213,7 +213,7 @@ const (
 var TitleTypeMap = map[string]TitleType{
 	"Wii":       Wii,
 	"Channel":   WiiChannel,
-	"WiiWare":   _WiiWare,
+	"WiiWare":   WiiWare_,
 	"VC-NES":    NES,
 	"VC-SNES":   SNES,
 	"VC-N64":    Nintendo64,

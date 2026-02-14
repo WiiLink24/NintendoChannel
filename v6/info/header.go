@@ -86,4 +86,44 @@ func (i *Info) MakeHeader(gameID [4]byte, numberOfPlayers uint8, companyID uint3
 		Unknown5:                            [3]byte{4, 1, 0},
 		NumberOfPlayers:                     numberOfPlayers,
 	}
+	switch titleType {
+	case constants.WiiWare_,
+		constants.NES,
+		constants.SNES,
+		constants.Nintendo64,
+		constants.TurboGrafx16,
+		constants.Genesis,
+		constants.NeoGeo,
+		constants.MasterSystem,
+		constants.Commodore64,
+		constants.VirtualConsoleArcade:
+		i.Header.IsOnWiiShop = 1
+	default:
+		i.Header.IsOnWiiShop = 0
+	}
+	switch titleType {
+	case constants.Wii,
+		constants.NintendoDS,
+		constants.NintendoDSi,
+		constants.NintendoThreeDS:
+		i.Header.IsPurchasable = 1
+	default:
+		i.Header.IsPurchasable = 0
+	}
+	switch titleType { // Can't guarantee the amount of shop points for anything but Virtual Console
+	case constants.NES:
+		i.Header.ShopPoints = 500
+	case constants.SNES:
+		i.Header.ShopPoints = 800
+	case constants.Nintendo64:
+		i.Header.ShopPoints = 1000
+	case constants.Genesis:
+		i.Header.ShopPoints = 800
+	case constants.NeoGeo:
+		i.Header.ShopPoints = 900
+	case constants.MasterSystem:
+		i.Header.ShopPoints = 500
+	default:
+		i.Header.ShopPoints = 0xFFFFFFFF
+	} //TODO: implement the rest of the shop points for different regions (imports may be 100 or more points than usa) and publishers cuz inconsistency
 }

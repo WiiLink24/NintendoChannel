@@ -1,0 +1,4 @@
+cli/config.xml
+cli/cli
+.DS_Store
+*.pem
