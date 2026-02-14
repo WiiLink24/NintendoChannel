@@ -193,7 +193,11 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				strings.Contains(title, "(Beta)") || strings.Contains(title, "Relay") ||
 				slices.Contains(constants.DevAppIDs, game.ID[:4]) {
 				continue
-				}
+			}
+
+			if game.ID[3] != regionToCodeTDB[l.region] {
+				continue
+			}
 
 			var titleID [4]byte
 			copy(titleID[:], game.ID)
