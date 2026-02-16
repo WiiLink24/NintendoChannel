@@ -6,8 +6,6 @@ import (
 	"strings"
 	"time"
 	"unicode/utf16"
-
-	"github.com/mitchellh/go-wordwrap"
 )
 
 type VideoTable struct {
@@ -69,22 +67,11 @@ func (l *List) MakeVideoTable() {
 		err = rows.Scan(&id, &queriedTitle, &length, &videoType, &dateAdded)
 		common.CheckError(err)
 
+		queriedTitle = strings.TrimSpace(queriedTitle)
 		var title [123]uint16
-		if strings.Contains(queriedTitle, "|") {
-			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
-
-		} else if len(queriedTitle) > 51 {
-			wrapped := wordwrap.WrapString(queriedTitle, 51)
-			lines := strings.Split(wrapped, "\n")
-			if len(lines) >= 2 {
-				queriedTitle = lines[0] + "\n" + lines[1]
-			} else {
-				queriedTitle = lines[0]
-			}
-		}
-
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
+
 		// A new video is one that is less than 5 days old
 		fiveDaysAfterAdded := dateAdded.AddDate(0, 0, 5)
 		isNew := 0
@@ -128,20 +115,8 @@ func (l *List) MakeNewVideoTable() {
 		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
 		common.CheckError(err)
 
+		queriedTitle = strings.TrimSpace(queriedTitle)
 		var title [102]uint16
-		if strings.Contains(queriedTitle, "|") {
-			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
-
-		} else if len(queriedTitle) > 51 {
-			wrapped := wordwrap.WrapString(queriedTitle, 51)
-			lines := strings.Split(wrapped, "\n")
-			if len(lines) >= 2 {
-				queriedTitle = lines[0] + "\n" + lines[1]
-			} else {
-				queriedTitle = lines[0]
-			}
-		}
-
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
 
@@ -177,22 +152,11 @@ func (l *List) MakePopularVideoTable() {
 		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
 		common.CheckError(err)
 
+		queriedTitle = strings.TrimSpace(queriedTitle)
 		var title [102]uint16
-		if strings.Contains(queriedTitle, "|") {
-			queriedTitle = strings.ReplaceAll(queriedTitle, "|", "\n")
-
-		} else if len(queriedTitle) > 51 {
-			wrapped := wordwrap.WrapString(queriedTitle, 51)
-			lines := strings.Split(wrapped, "\n")
-			if len(lines) >= 2 {
-				queriedTitle = lines[0] + "\n" + lines[1]
-			} else {
-				queriedTitle = lines[0]
-			}
-		}
-
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
+
 		l.PopularVideosTable = append(l.PopularVideosTable, PopularVideosTable{
 			ID:          uint32(id),
 			VideoLength: uint16(length),
