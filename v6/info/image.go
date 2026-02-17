@@ -121,8 +121,12 @@ func resize(origImage image.Image, x, y int) image.Image {
 	return newImage
 }
 
-func (i *Info) WriteDetailedRatingImage(buffer *bytes.Buffer, region constants.Region, RatingDescriptors [7]string) {
-	for j, s := range RatingDescriptors {
+func (i *Info) WriteRatingDescriptor(buffer *bytes.Buffer, region constants.Region, RatingDescriptors []string) {
+	// Cap
+	maxDescriptors := min(len(RatingDescriptors), 7)
+	for j := 0; j < maxDescriptors; j++ {
+		s := RatingDescriptors[j]
+
 		// Skip empty strings
 		if s == "" {
 			continue

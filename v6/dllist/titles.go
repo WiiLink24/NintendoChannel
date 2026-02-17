@@ -188,9 +188,6 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				continue
 			}
 
-			var descriptorArray [7]string
-			copy(descriptorArray[:], game.Rating.Descriptor)
-
 			if game.ID[3] != regionToCodeTDB[l.region] {
 				continue
 			}
@@ -305,8 +302,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			i.MakeHeader(id, titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
 
-			copy(descriptorArray[:], game.Rating.Descriptor)
-			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType, descriptorArray, recommendations)
+			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType, game.Rating.Descriptor, recommendations)
 		}
 	}
 }
