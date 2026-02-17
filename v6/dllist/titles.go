@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"hash/crc32"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode/utf16"
@@ -184,7 +185,13 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			// We will not include mods, GameCube games, demos, DS Download Stations, or Pokemon distributions
 			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" || titleType == constants.ThreeDSDownload ||
 				strings.Contains(title, "(Demo)") || strings.Contains(title, "Download") ||
-				strings.Contains(title, "Distribution") || strings.Contains(title, "DSi XL") {
+				strings.Contains(title, "Distribution") || strings.Contains(title, "DSi XL") ||
+				strings.Contains(title, "Exclusive") || strings.Contains(title, "Toys R Us") ||
+				strings.Contains(title, "GameStop") || strings.Contains(title, "Target") ||
+				strings.Contains(title, "Best Buy") || strings.Contains(title, "Walmart") ||
+				strings.Contains(title, "Limited Edition") || strings.Contains(title, "Collector's Edition") ||
+				strings.Contains(title, "(Beta)") || strings.Contains(title, "Relay") ||
+				slices.Contains(constants.DevAppIDs, game.ID[:4]) {
 				continue
 			}
 
