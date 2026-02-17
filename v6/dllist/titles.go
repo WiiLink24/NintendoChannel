@@ -168,7 +168,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 		forcedRegion = "NTSC-U"
 	}
 
-		if game.Region == regionToGameTDB[l.region] || game.Region == "ALL" {
+		if forcedRegion == regionToGameTDB[l.region] || game.Region == "ALL" {
 			titleType := defaultTitleType
 			// (Sketch) The first locale will always be English from what I have observed
 			title := game.Locale[0].Title
@@ -202,7 +202,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				continue
 			}
 
-			if game.ID[3] != regionToCodeTDB[l.region] {
+			if !slices.Contains(regionToCodeTDB[l.region], game.ID[3]) {
 				continue
 			}
 
