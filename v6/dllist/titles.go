@@ -101,10 +101,10 @@ var regionToGameTDB = map[constants.Region]string{
 	constants.Japan: "NTSC-J",
 }
 
-var regionToCodeTDB = map[constants.Region]byte{
-	constants.NTSC:  'E',
-	constants.PAL:   'P',
-	constants.Japan: 'J',
+var regionToCodeTDB = map[constants.Region][]byte{
+	constants.NTSC:  {'E', 'L', 'X', 'Z'},
+	constants.PAL:   {'P', 'F', 'D', 'S', 'I', 'H', 'U', 'X', 'Y', 'V', 'Z'},
+	constants.Japan: {'J'},
 }
 
 var gameTDBRatingToRatingID = map[string]map[string]uint8{
@@ -160,6 +160,13 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			// Whatever the reason is, we have no metadata to use.
 			continue
 		}
+		
+	forcedRegion := game.Region
+	isForced := slices.Contains(constants.CanadaUSAIDs, game.ID[:4])
+
+	if isForced {
+		forcedRegion = "NTSC-U"
+	}
 
 		if game.Region == regionToGameTDB[l.region] || game.Region == "ALL" {
 			titleType := defaultTitleType
