@@ -141,12 +141,11 @@ func (i *Info) WriteRatingDescriptor(buffer *bytes.Buffer, region constants.Regi
 			descriptorImage = constants.PEGIDescriptors[s]
 		case constants.NTSC:
 			descriptorImage = constants.ESRBDescriptors[s]
-
-			// Set picture table entry
-			i.Header.DetailedRatingPictureTable[j].PictureOffset = i.GetCurrentSize(buffer)
-			buffer.Write(descriptorImage)
-			i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(len(descriptorImage))
-
 		}
+
+		// Set picture table entry
+		i.Header.DetailedRatingPictureTable[j].PictureOffset = i.GetCurrentSize(buffer)
+		buffer.Write(descriptorImage)
+		i.Header.DetailedRatingPictureTable[j].PictureSize = uint32(len(descriptorImage))
 	}
 }
