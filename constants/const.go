@@ -186,7 +186,7 @@ var DevAppIDs = []string{
 }
 
 var CanadaUSAIDs = []string{
-	"VT3Z", "B5BL", "C62L", "B6RX",
+	"VT3Z", "B5BL", "C62L", "B6RX", "BDYX", "BDPL", "BJBX", "BJCZ", "B58L", "BD4X", "B5CX",
 }
 
 
