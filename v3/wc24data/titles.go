@@ -6,11 +6,12 @@ import (
 	"NintendoChannel/gametdb"
 	"encoding/binary"
 	"encoding/hex"
-	"github.com/mitchellh/go-wordwrap"
 	"math"
 	"strconv"
 	"strings"
 	"unicode/utf16"
+
+	"github.com/mitchellh/go-wordwrap"
 )
 
 type Company struct {
@@ -547,6 +548,21 @@ func SetGenre(game *gametdb.Game) [3]byte {
 	}
 
 	return genre
+}
+
+func (w *WC24Data) MakeNewTitleTable() {
+	w.Header.NewTitleTableOffset = w.GetCurrentSize()
+
+	titleSize := uint32(binary.Size(Title{}))
+	for i, title := range w.TitleTable {
+		if title.ReleaseYear != 0xFFFF && title.ReleaseMonth != 0xFF &&
+			title.ReleaseDay != 0xFF && title.ReleaseYear >= 2019 {
+			offset := w.Header.TitleTableOffset + uint32(i)*titleSize
+			w.NewTitleTable = append(w.NewTitleTable, offset)
+		}
+	}
+
+	w.Header.NumberOfNewTitles = uint32(len(w.NewTitleTable))
 }
 
 func GetRatingID(rating gametdb.Rating) uint8 {

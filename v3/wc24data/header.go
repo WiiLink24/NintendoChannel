@@ -17,7 +17,8 @@ type Header struct {
 	ManufacturerTableOffset uint32
 	NumberOfTitles          uint32
 	TitleTableOffset        uint32
-	_                       [8]byte
+	NumberOfNewTitles       uint32
+	NewTitleTableOffset     uint32
 	NumberOfVideos          uint32
 	VideoTableOffset        uint32
 	NumberOfDemos           uint32
@@ -54,6 +55,8 @@ func (w *WC24Data) MakeHeader() {
 		ManufacturerTableOffset: 0,
 		NumberOfTitles:          0,
 		TitleTableOffset:        0,
+		NumberOfNewTitles:       0,
+		NewTitleTableOffset:     0,
 		NumberOfVideos:          0,
 		VideoTableOffset:        0,
 		NumberOfDemos:           0,

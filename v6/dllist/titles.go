@@ -5,6 +5,7 @@ import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"NintendoChannel/v6/info"
+	"encoding/binary"
 	"encoding/hex"
 	"hash/crc32"
 	"math"
@@ -402,10 +403,18 @@ func (l *List) SetGenre(game *gametdb.Game) [3]byte {
 }
 
 func (l *List) MakeNewTitleTable() {
-	// TODO: Figure out a way to get the newest titles
 	l.Header.NewTitleTableOffset = l.GetCurrentSize()
-	l.NewTitleTable = append(l.NewTitleTable, l.Header.TitleTableOffset)
-	l.Header.NumberOfNewTitleTables = 1
+
+	titleSize := uint32(binary.Size(TitleTable{}))
+	for i, title := range l.TitleTable {
+		if title.ReleaseYear != 0xFFFF && title.ReleaseMonth != 0xFF &&
+			title.ReleaseDay != 0xFF && title.ReleaseYear >= 2019 {
+			offset := l.Header.TitleTableOffset + uint32(i)*titleSize
+			l.NewTitleTable = append(l.NewTitleTable, offset)
+		}
+	}
+
+	l.Header.NumberOfNewTitleTables = uint32(len(l.NewTitleTable))
 }
 
 func GetMedal(numberOfTimesVotes int) constants.Medal {

@@ -8,13 +8,14 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
-	"github.com/SketchMaster2001/libwc24crypt"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/wii-tools/lzx/lz10"
 	"hash/crc32"
 	"io"
 	"os"
 	"sync"
+
+	"github.com/SketchMaster2001/libwc24crypt"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/wii-tools/lzx/lz10"
 )
 
 type WC24Data struct {
@@ -22,6 +23,7 @@ type WC24Data struct {
 	PlatformTable []Platform
 	CompanyTable  []Company
 	TitleTable    []Title
+	NewTitleTable []uint32
 	VideoTable    []VideoTable
 	ExtraBytes    []uint16
 
@@ -75,6 +77,7 @@ func MakeList() {
 				list.MakePlatformTable()
 				list.MakeCompaniesTable()
 				list.MakeTitleTable()
+				list.MakeNewTitleTable()
 				list.MakeVideoTable()
 
 				list.Header.Something = list.GetCurrentSize()
@@ -123,6 +126,7 @@ func (w *WC24Data) WriteAll(writer io.Writer) {
 	w.Write(writer, w.PlatformTable)
 	w.Write(writer, w.CompanyTable)
 	w.Write(writer, w.TitleTable)
+	w.Write(writer, w.NewTitleTable)
 	w.Write(writer, w.VideoTable)
 	w.Write(writer, w.ExtraBytes)
 }
