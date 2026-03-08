@@ -179,11 +179,10 @@ var TitleTypesData = []TitleTypeData{
 }
 
 var TouchGenIDs = []string{
-	"YBN", "VAA", "AYA", "AND", "ANM", "ATD", "CVN",
-	"YCU", "ATI", "AOS", "AG3", "AWI", "APL", "AJQ", "CM7",
-	"AD5", "AD2", "ADG", "AD7", "AD3", "IMW", "C6P", "AXP",
-	"A8N", "AZI", "ASQ", "ATR", "AGF",
-	"RFN", "RFP", "R64", "RYW",
+	"YBN", "VAAE", "VAAV", "AYA", "AND", "ANM", "ATD", "ADJ", "BET", "CNVP", "CNVF", "CNVD", "CNVI", "CNVS", "ANH", "ANG", "AUA", "AUB", "AUC", "AUD", "AUE", "AIX", "AIZ",
+	"YCU", "ATI", "AOS", "AG3", "AWIE", "APLE", "AJQE", "AJQJ","CM7", "BKCE", "ATG", "AVM",  "AD5", "AD2", "ADG", "AD7", "AD3", "IMW", "IA8", "C6P", "AXP", "A4VJ", "AJM", "AOI",
+	"A8NE", "A2Y", "AZI", "ASQ", "AJY", "ATR", "ARJ", "AGFE", "USK", "VET", "YFCE", "YLZP", "YLZX", "YLZJ", "YNU", "SUPP", "SUPJ", "RFN", "RFP", "R64", "RYW", "RHAP", "RHAJ",
+	"RJT", "RSPP", "RSPJ", "RZTP", "RFBP", "R4EP", "RNOP", "RTYP", "SP2P",
 }
 
 var PaynPlayIDs = []string{
@@ -194,6 +193,11 @@ var PaynPlayIDs = []string{
 var DevAppIDs = []string{
 	"007E", "091E", "410E", "413E", "5NEA", "RAAE",
 }
+
+var CanadaUSAIDs = []string{
+	"VT3Z", "B5BL", "C62L", "B6RX", "BDYX", "BDPL", "BJBX", "BJCZ", "B58L", "BD4X", "B5CX",
+}
+
 
 // TitleType is the classified type of title according to GameTDB
 type TitleType uint8

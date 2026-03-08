@@ -103,10 +103,10 @@ var regionToGameTDB = map[constants.Region]string{
 	constants.Japan: "NTSC-J",
 }
 
-var regionToCodeTDB = map[constants.Region]byte{
-	constants.NTSC:  'E',
-	constants.PAL:   'P',
-	constants.Japan: 'J',
+var regionToCodeTDB = map[constants.Region][]byte{
+	constants.NTSC:  {'E', 'L', 'X', 'Z'},
+	constants.PAL:   {'P', 'F', 'D', 'S', 'I', 'H', 'U', 'X', 'Y', 'V', 'Z'},
+	constants.Japan: {'J'},
 }
 
 var gameTDBRatingToRatingID = map[string]map[string]uint8{
@@ -162,8 +162,15 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			// Whatever the reason is, we have no metadata to use.
 			continue
 		}
+		
+	forcedRegion := game.Region
+	isForced := slices.Contains(constants.CanadaUSAIDs, game.ID[:4])
 
-		if game.Region == regionToGameTDB[l.region] || game.Region == "ALL" {
+	if isForced {
+		forcedRegion = "NTSC-U"
+	}
+
+		if forcedRegion == regionToGameTDB[l.region] || game.Region == "ALL" {
 			titleType := defaultTitleType
 			// (Sketch) The first locale will always be English from what I have observed
 			title := game.Locale[0].Title
@@ -197,7 +204,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				continue
 			}
 
-			if game.ID[3] != regionToCodeTDB[l.region] {
+			if !slices.Contains(regionToCodeTDB[l.region], game.ID[3]) {
 				continue
 			}
 
