@@ -71,7 +71,7 @@ func MakeDownloadList(_generateTitles bool) {
 	wg := sync.WaitGroup{}
 	semaphore := make(chan any, 3)
 
-	wg.Add(10)
+	wg.Add(11)
 	for _, region := range constants.Regions {
 		for _, language := range region.Languages {
 			go func(_region constants.RegionMeta, _language constants.Language) {
