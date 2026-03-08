@@ -19,15 +19,16 @@ import (
 )
 
 type DBBanner struct {
-	ID       int
-	Japanese string
-	English  string
-	German   string
-	French   string
-	Spanish  string
-	Italian  string
-	Dutch    string
-	Order    int
+	ID                  int
+	Japanese            string
+	English             string
+	German              string
+	French              string
+	Spanish             string
+	Italian             string
+	Dutch               string
+	BrazilianPortuguese string
+	Order               int
 }
 
 type Header struct {
@@ -72,6 +73,8 @@ func (d *DBBanner) GetTextForLanguage(language constants.Language) string {
 		return d.Italian
 	case constants.Dutch:
 		return d.Dutch
+	case constants.BrazilianPortuguese:
+		return d.BrazilianPortuguese
 	default:
 		// Will never reach here
 		return ""
@@ -99,7 +102,7 @@ func CreateCSData() {
 	for rows.Next() {
 		var dbBanner DBBanner
 		err = rows.Scan(&dbBanner.ID, &dbBanner.Japanese, &dbBanner.English, &dbBanner.German, &dbBanner.French,
-			&dbBanner.Spanish, &dbBanner.Italian, &dbBanner.Dutch, &dbBanner.Order)
+			&dbBanner.Spanish, &dbBanner.Italian, &dbBanner.Dutch, &dbBanner.Order, &dbBanner.BrazilianPortuguese)
 		common.CheckError(err)
 
 		dbBanners = append(dbBanners, dbBanner)

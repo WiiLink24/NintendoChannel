@@ -87,13 +87,14 @@ func (l *List) MakeCompaniesTable() {
 }
 
 var langaugeToLocale = map[constants.Language]string{
-	constants.Japanese: "JA",
-	constants.English:  "EN",
-	constants.German:   "DE",
-	constants.French:   "FR",
-	constants.Spanish:  "ES",
-	constants.Italian:  "IT",
-	constants.Dutch:    "NL",
+	constants.Japanese:            "JA",
+	constants.English:             "EN",
+	constants.German:              "DE",
+	constants.French:              "FR",
+	constants.Spanish:             "ES",
+	constants.Italian:             "IT",
+	constants.Dutch:               "NL",
+	constants.BrazilianPortuguese: "PTBR",
 }
 
 var regionToGameTDB = map[constants.Region]string{

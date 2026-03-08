@@ -64,6 +64,10 @@ const (
 	Spanish
 	Italian
 	Dutch
+	/*
+		Below are unofficial languages.
+	*/
+	BrazilianPortuguese
 )
 
 type RegionMeta struct {
@@ -80,7 +84,7 @@ var Regions = []RegionMeta{
 	},
 	{
 		Region:      NTSC,
-		Languages:   []Language{English, French, Spanish},
+		Languages:   []Language{English, French, Spanish, BrazilianPortuguese},
 		RatingGroup: ESRB,
 	},
 	{
@@ -186,7 +190,6 @@ var PaynPlayIDs = []string{
 	"WFC", "R3B", "WR9", "WRX", "SJD", "SD2", "SJX",
 	"SJO", "SE3", "SZA", "SZB", "R9J", "SXE", "SXI", "R36",
 	"SXA", "SWA", "SWB", "SXF", "R9O", "SUS", "SU3", "R83",
-  
 }
 var DevAppIDs = []string{
 	"007E", "091E", "410E", "413E", "5NEA", "RAAE",
@@ -266,6 +269,8 @@ func GetVideoQueryString(language Language) string {
 		return `SELECT id, name_italian, length, video_type, date_added FROM videos ORDER BY id DESC`
 	case Dutch:
 		return `SELECT id, name_dutch, length, video_type, date_added FROM videos ORDER BY id DESC`
+	case BrazilianPortuguese:
+		return `SELECT id, name_ptbr, length, video_type, date_added FROM videos ORDER BY id DESC`
 	default:
 		// Will never reach here
 		return ""
