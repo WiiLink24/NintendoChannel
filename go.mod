@@ -1,6 +1,6 @@
 module NintendoChannel
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/SketchMaster2001/libwc24crypt v0.0.0-20221114191055-b7fc8eef33ba
@@ -10,7 +10,7 @@ require (
 )
 
 require (
-	github.com/jackc/pgx/v5 v5.8.0
+	github.com/jackc/pgx/v5 v5.9.0
 	github.com/wii-tools/libtpl v0.0.0-20240108143603-e66a8e51037d
 	golang.org/x/image v0.36.0
 	golang.org/x/text v0.34.0
