@@ -236,6 +236,7 @@ var TitleTypeMap = map[string]TitleType{
 	"DSi":       NintendoDSi,
 	"DSiWare":   NintendoDSiWare,
 	"3DS":       NintendoThreeDS,
+	"New3DS":    NintendoThreeDS,
 	"3DSWare":   ThreeDSDownload,
 	"VC-GB":     ThreeDSDownload,
 	"VC-GBC":    ThreeDSDownload,
