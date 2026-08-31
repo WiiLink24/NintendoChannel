@@ -1,4 +1,5 @@
-cli/config.xml
-cli/cli
+config.xml
+/cli/cli
+/docker/docker
 .DS_Store
 *.pem

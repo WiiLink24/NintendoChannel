@@ -10,4 +10,7 @@
     <!-- Assets -->
     <assetsPath>assets</assetsPath>
     <imagesPath>images</imagesPath>
+
+    <!-- Secret for securing UNIX socket -->
+    <socketSecret></socketSecret>
 </Config>
