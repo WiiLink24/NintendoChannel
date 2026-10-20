@@ -111,8 +111,8 @@ func (i *Info) WriteRatingImage(buffer *bytes.Buffer, region constants.Region) {
 		constants.PAL:   constants.PEGI,
 	}
 
-	buffer.Write(constants.Images[regionToRatingGroup[region]][i.RatingID-8])
-	i.Header.RatingPictureSize = uint32(len(constants.Images[regionToRatingGroup[region]][i.RatingID-8]))
+	buffer.Write(constants.ImagesSmall[regionToRatingGroup[region]][i.RatingID-8])
+	i.Header.RatingPictureSize = uint32(len(constants.ImagesSmall[regionToRatingGroup[region]][i.RatingID-8]))
 }
 
 func resize(origImage image.Image, x, y int) image.Image {
