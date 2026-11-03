@@ -176,16 +176,12 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 						fullTitle = locale.Title
 						synopsis = locale.Synopsis
 						titleType = constants.TitleTypeMap[game.Type]
-
-						if titleType == constants.NES && defaultTitleType == constants.NintendoThreeDS {
-							titleType = constants.NintendoThreeDS
-						}
 					}
 				}
 			}
 
 			// We will not include mods, GameCube games, demos, DS Download Stations, or Pokemon distributions
-			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" || titleType == constants.ThreeDSDownload ||
+			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" ||
 				strings.Contains(title, "(Demo)") || strings.Contains(title, "Download") ||
 				strings.Contains(title, "Distribution") || strings.Contains(title, "DSi XL") ||
 				strings.Contains(title, "Exclusive") || strings.Contains(title, "Toys R Us") ||
