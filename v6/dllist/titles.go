@@ -176,7 +176,6 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 						fullTitle = locale.Title
 						synopsis = locale.Synopsis
 						titleType = constants.TitleTypeMap[game.Type]
-						}
 					}
 				}
 			}
